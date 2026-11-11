@@ -1,0 +1,326 @@
+newman
+
+ColheAí API - Since Young (GS 2026/2 DDD)
+
+❏ 1. Acordar a API
+↳ GET /status
+  GET https://colheai-api.onrender.com/status [200 OK, 464B, 299ms]
+  ✓  Status 200
+  ✓  Resposta em JSON
+
+❏ 2. CRUD completo (agricultor familiar)
+↳ Cadastrar agricultor (201 + Location)
+  POST https://colheai-api.onrender.com/agricultores [201 Created, 738B, 1124ms]
+  ✓  Status 201
+  ✓  Resposta em JSON
+  ✓  Tem cabecalho Location
+
+↳ Listar agricultores (200)
+  GET https://colheai-api.onrender.com/agricultores [200 OK, 3.03kB, 1255ms]
+  ✓  Status 200
+  ✓  Resposta em JSON
+
+↳ Buscar agricultor por id (200)
+  GET https://colheai-api.onrender.com/agricultores/102 [200 OK, 672B, 1016ms]
+  ✓  Status 200
+  ✓  Resposta em JSON
+
+↳ Atualizar agricultor (200)
+  PUT https://colheai-api.onrender.com/agricultores/102 [200 OK, 685B, 1427ms]
+  ✓  Status 200
+  ✓  Resposta em JSON
+
+↳ Remover agricultor (204)
+  DELETE https://colheai-api.onrender.com/agricultores/102 [204 No Content, 344B, 1102ms]
+  ✓  Status 204
+  ✓  Resposta em JSON
+
+↳ Buscar o agricultor removido (404)
+  GET https://colheai-api.onrender.com/agricultores/102 [404 Not Found, 513B, 673ms]
+  ✓  Status 404
+  ✓  Resposta em JSON
+
+❏ 3. Erros ao vivo
+↳ 400 - cadastro inválido (campos vazios e fora da regra)
+  POST https://colheai-api.onrender.com/agricultores [400 Bad Request, 812B, 642ms]
+  ✓  Status 400
+  ✓  Resposta em JSON
+
+↳ 404 - id que não existe
+  GET https://colheai-api.onrender.com/agricultores/999 [404 Not Found, 513B, 889ms]
+  ✓  Status 404
+  ✓  Resposta em JSON
+
+↳ 409 - CAF já cadastrado
+  POST https://colheai-api.onrender.com/agricultores [409 Conflict, 557B, 888ms]
+  ✓  Status 409
+  ✓  Resposta em JSON
+
+↳ 409 - remover agricultor que tem propostas
+  DELETE https://colheai-api.onrender.com/agricultores/1 [409 Conflict, 552B, 1247ms]
+  ✓  Status 409
+  ✓  Resposta em JSON
+
+↳ 405 - método não suportado
+  PATCH https://colheai-api.onrender.com/chamadas/1 [405 Method Not Allowed, 455B, 716ms]
+  ✓  Status 405
+  ✓  Resposta em JSON
+
+↳ 404 - rota que não existe
+  GET https://colheai-api.onrender.com/rota-que-nao-existe [404 Not Found, 541B, 509ms]
+  ✓  Status 404
+  ✓  Resposta em JSON
+
+↳ 400 - JSON malformado
+  POST https://colheai-api.onrender.com/agricultores [400 Bad Request, 603B, 523ms]
+  ✓  Status 400
+  ✓  Resposta em JSON
+
+❏ 4. Fluxo do MVP (chamada, proposta e meta)
+↳ Chamadas abertas
+  GET https://colheai-api.onrender.com/chamadas?status=ABERTA [200 OK, 774B, 934ms]
+  ✓  Status 200
+  ✓  Resposta em JSON
+
+↳ Detalhe da chamada 3
+  GET https://colheai-api.onrender.com/chamadas/3 [200 OK, 779B, 1205ms]
+  ✓  Status 200
+  ✓  Resposta em JSON
+
+↳ Itens da chamada 3 (produto, quantidade, preço)
+  GET https://colheai-api.onrender.com/chamadas/3/itens [200 OK, 1.1kB, 1530ms]
+  ✓  Status 200
+  ✓  Resposta em JSON
+
+↳ Proposta válida: Benedito oferta batata-doce (201)
+  POST https://colheai-api.onrender.com/itens/9/propostas [201 Created, 992B, 2.1s]
+  ✓  Status 201
+  ✓  Resposta em JSON
+  ✓  Tem cabecalho Location
+
+↳ 409 - regra dos R$ 40 mil (Maria passaria do teto)
+  POST https://colheai-api.onrender.com/itens/7/propostas [409 Conflict, 683B, 1799ms]
+  ✓  Status 409
+  ✓  Resposta em JSON
+
+↳ 409 - proposta para chamada que não está aberta
+  POST https://colheai-api.onrender.com/itens/5/propostas [409 Conflict, 553B, 1227ms]
+  ✓  Status 409
+  ✓  Resposta em JSON
+
+↳ Contratar a proposta do Benedito (PUT 200)
+  PUT https://colheai-api.onrender.com/propostas/104 [200 OK, 960B, 1755ms]
+  ✓  Status 200
+  ✓  Resposta em JSON
+
+↳ Painel da meta de 45% de São Paulo
+  GET https://colheai-api.onrender.com/entidades/1/meta [200 OK, 734B, 832ms]
+  ✓  Status 200
+  ✓  Resposta em JSON
+
+↳ Propostas do Benedito
+  GET https://colheai-api.onrender.com/agricultores/9/propostas [200 OK, 955B, 1328ms]
+  ✓  Status 200
+  ✓  Resposta em JSON
+
+↳ Desfazer: remover a proposta da demonstração (204)
+  DELETE https://colheai-api.onrender.com/propostas/104 [204 No Content, 344B, 533ms]
+  ✓  Status 204
+  ✓  Resposta em JSON
+
+❏ 5. Todas as rotas (referência) / EEx (Entidade Executora)
+↳ POST /entidades (201)
+  POST https://colheai-api.onrender.com/entidades [201 Created, 671B, 1249ms]
+  ✓  Status 201
+  ✓  Resposta em JSON
+  ✓  Tem cabecalho Location
+
+↳ GET /entidades (200)
+  GET https://colheai-api.onrender.com/entidades [200 OK, 1.11kB, 631ms]
+  ✓  Status 200
+  ✓  Resposta em JSON
+
+↳ GET /entidades/{id} (200)
+  GET https://colheai-api.onrender.com/entidades/104 [200 OK, 608B, 1004ms]
+  ✓  Status 200
+  ✓  Resposta em JSON
+
+↳ PUT /entidades/{id} (200)
+  PUT https://colheai-api.onrender.com/entidades/104 [200 OK, 608B, 1108ms]
+  ✓  Status 200
+  ✓  Resposta em JSON
+
+↳ POST /entidades - IBGE repetido (409)
+  POST https://colheai-api.onrender.com/entidades [409 Conflict, 576B, 1819ms]
+  ✓  Status 409
+  ✓  Resposta em JSON
+
+↳ POST /entidades/{id}/chamadas (201)
+  POST https://colheai-api.onrender.com/entidades/104/chamadas [201 Created, 848B, 1369ms]
+  ✓  Status 201
+  ✓  Resposta em JSON
+  ✓  Tem cabecalho Location
+
+↳ GET /entidades/{id}/chamadas (200)
+  GET https://colheai-api.onrender.com/entidades/104/chamadas [200 OK, 781B, 1302ms]
+  ✓  Status 200
+  ✓  Resposta em JSON
+
+↳ GET /entidades/{id}/meta (200)
+  GET https://colheai-api.onrender.com/entidades/104/meta [200 OK, 747B, 1146ms]
+  ✓  Status 200
+  ✓  Resposta em JSON
+
+❏ 5. Todas as rotas (referência) / Chamada pública
+↳ GET /chamadas (200)
+  GET https://colheai-api.onrender.com/chamadas [200 OK, 2.91kB, 1037ms]
+  ✓  Status 200
+  ✓  Resposta em JSON
+
+↳ GET /chamadas/{id} (200)
+  GET https://colheai-api.onrender.com/chamadas/103 [200 OK, 786B, 881ms]
+  ✓  Status 200
+  ✓  Resposta em JSON
+
+↳ PUT /chamadas/{id} (200)
+  PUT https://colheai-api.onrender.com/chamadas/103 [200 OK, 786B, 1152ms]
+  ✓  Status 200
+  ✓  Resposta em JSON
+
+↳ POST /chamadas/{id}/itens (201)
+  POST https://colheai-api.onrender.com/chamadas/103/itens [201 Created, 670B, 1801ms]
+  ✓  Status 201
+  ✓  Resposta em JSON
+  ✓  Tem cabecalho Location
+
+↳ GET /chamadas/{id}/itens (200)
+  GET https://colheai-api.onrender.com/chamadas/103/itens [200 OK, 606B, 1171ms]
+  ✓  Status 200
+  ✓  Resposta em JSON
+
+↳ DELETE /chamadas/{id} com itens (409)
+  DELETE https://colheai-api.onrender.com/chamadas/103 [409 Conflict, 552B, 1411ms]
+  ✓  Status 409
+  ✓  Resposta em JSON
+
+❏ 5. Todas as rotas (referência) / Item da chamada
+↳ GET /itens (200)
+  GET https://colheai-api.onrender.com/itens [200 OK, 3.57kB, 886ms]
+  ✓  Status 200
+  ✓  Resposta em JSON
+
+↳ GET /itens/{id} (200)
+  GET https://colheai-api.onrender.com/itens/104 [200 OK, 611B, 668ms]
+  ✓  Status 200
+  ✓  Resposta em JSON
+
+↳ PUT /itens/{id} (200)
+  PUT https://colheai-api.onrender.com/itens/104 [200 OK, 611B, 1402ms]
+  ✓  Status 200
+  ✓  Resposta em JSON
+
+↳ POST /itens/{id}/propostas (201)
+  POST https://colheai-api.onrender.com/itens/104/propostas [201 Created, 1kB, 2.1s]
+  ✓  Status 201
+  ✓  Resposta em JSON
+  ✓  Tem cabecalho Location
+
+↳ GET /itens/{id}/propostas (200)
+  GET https://colheai-api.onrender.com/itens/104/propostas [200 OK, 937B, 895ms]
+  ✓  Status 200
+  ✓  Resposta em JSON
+
+❏ 5. Todas as rotas (referência) / Proposta
+↳ GET /propostas (200)
+  GET https://colheai-api.onrender.com/propostas [200 OK, 11.81kB, 1410ms]
+  ✓  Status 200
+  ✓  Resposta em JSON
+
+↳ GET /propostas/{id} (200)
+  GET https://colheai-api.onrender.com/propostas/105 [200 OK, 942B, 913ms]
+  ✓  Status 200
+  ✓  Resposta em JSON
+
+↳ PUT /propostas/{id} (200)
+  PUT https://colheai-api.onrender.com/propostas/105 [200 OK, 942B, 1796ms]
+  ✓  Status 200
+  ✓  Resposta em JSON
+
+↳ DELETE /propostas/{id} (204)
+  DELETE https://colheai-api.onrender.com/propostas/105 [204 No Content, 344B, 670ms]
+  ✓  Status 204
+  ✓  Resposta em JSON
+
+❏ 5. Todas as rotas (referência) / Produto
+↳ POST /produtos (201)
+  POST https://colheai-api.onrender.com/produtos [201 Created, 577B, 899ms]
+  ✓  Status 201
+  ✓  Resposta em JSON
+  ✓  Tem cabecalho Location
+
+↳ GET /produtos (200)
+  GET https://colheai-api.onrender.com/produtos [200 OK, 1.27kB, 1179ms]
+  ✓  Status 200
+  ✓  Resposta em JSON
+
+↳ GET /produtos/{id} (200)
+  GET https://colheai-api.onrender.com/produtos/103 [200 OK, 515B, 875ms]
+  ✓  Status 200
+  ✓  Resposta em JSON
+
+↳ PUT /produtos/{id} (200)
+  PUT https://colheai-api.onrender.com/produtos/103 [200 OK, 524B, 695ms]
+  ✓  Status 200
+  ✓  Resposta em JSON
+
+↳ DELETE /produtos/{id} usado em item (409)
+  DELETE https://colheai-api.onrender.com/produtos/4 [409 Conflict, 552B, 1207ms]
+  ✓  Status 409
+  ✓  Resposta em JSON
+
+↳ DELETE /produtos/{id} (204)
+  DELETE https://colheai-api.onrender.com/produtos/103 [204 No Content, 344B, 1107ms]
+  ✓  Status 204
+  ✓  Resposta em JSON
+
+❏ 5. Todas as rotas (referência) / Agricultor
+↳ GET /agricultores/{id}/propostas (200)
+  GET https://colheai-api.onrender.com/agricultores/1/propostas [200 OK, 1.56kB, 1165ms]
+  ✓  Status 200
+  ✓  Resposta em JSON
+
+❏ 5. Todas as rotas (referência) / Limpeza (remove o que a pasta 5 criou)
+↳ DELETE /itens/{id} (204)
+  DELETE https://colheai-api.onrender.com/itens/104 [204 No Content, 344B, 1081ms]
+  ✓  Status 204
+  ✓  Resposta em JSON
+
+↳ DELETE /chamadas/{id} (204)
+  DELETE https://colheai-api.onrender.com/chamadas/103 [204 No Content, 344B, 1045ms]
+  ✓  Status 204
+  ✓  Resposta em JSON
+
+↳ DELETE /entidades/{id} (204)
+  DELETE https://colheai-api.onrender.com/entidades/104 [204 No Content, 344B, 1064ms]
+  ✓  Status 204
+  ✓  Resposta em JSON
+
+┌─────────────────────────┬─────────────────────┬────────────────────┐
+│                         │            executed │             failed │
+├─────────────────────────┼─────────────────────┼────────────────────┤
+│              iterations │                   1 │                  0 │
+├─────────────────────────┼─────────────────────┼────────────────────┤
+│                requests │                  57 │                  0 │
+├─────────────────────────┼─────────────────────┼────────────────────┤
+│            test-scripts │                  57 │                  0 │
+├─────────────────────────┼─────────────────────┼────────────────────┤
+│      prerequest-scripts │                   0 │                  0 │
+├─────────────────────────┼─────────────────────┼────────────────────┤
+│              assertions │                 121 │                  0 │
+├─────────────────────────┴─────────────────────┴────────────────────┤
+│ total run duration: 1m 4.6s                                        │
+├────────────────────────────────────────────────────────────────────┤
+│ total data received: 32.94kB (approx)                              │
+├────────────────────────────────────────────────────────────────────┤
+│ average response time: 1119ms [min: 299ms, max: 2.1s, s.d.: 396ms] │
+└────────────────────────────────────────────────────────────────────┘

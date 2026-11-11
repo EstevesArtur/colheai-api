@@ -9,9 +9,9 @@
 
 | Link | Endereço |
 |---|---|
-| API publicada (Render) | _[preencher após o deploy]_ |
-| Repositório | _[preencher após criar o repositório]_ |
-| Vídeo (YouTube, não listado) | _[preencher quando o vídeo estiver pronto]_ |
+| API publicada (Render) | https://colheai-api.onrender.com (teste: [`/status`](https://colheai-api.onrender.com/status)) |
+| Repositório | https://github.com/EstevesArtur/colheai-api |
+| Vídeo (YouTube, não listado) | _[a incluir: o vídeo mostra o front-end integrado a esta API]_ |
 
 > No plano gratuito do Render, a API "dorme" depois de 15 minutos sem uso e leva cerca de 1 a 2 minutos para acordar. Abra `/status` e espere responder antes de testar.
 
@@ -121,11 +121,12 @@ O arquivo `.env.example` lista os nomes, sem valores.
 
 ### 4. Testar
 - **Postman:** importe `postman/ColheAi_API.postman_collection.json`. Troque a variável `baseUrl` para a URL do Render quando for testar a API publicada.
-- **curl:** `bash testes/matriz_curl.sh http://localhost:8080` roda os 105 casos (cada rota com cada status esperado). O resultado da última execução está em `testes/evidencia_matriz_curl.txt`.
+- **curl:** `bash testes/matriz_curl.sh https://colheai-api.onrender.com` roda os 105 casos (cada rota com cada status esperado).
+- **Evidências:** em `testes/` estão as saídas reais da matriz e da coleção do Postman, local e no Render (`evidencia_render_matriz_curl.txt`: 105 de 105; `evidencia_render_postman_newman.txt`: 121 de 121).
 
 ## Deploy
 
-A API roda no **Render** como **Web Service com Docker** (plano Free), a partir deste repositório. O Render constrói a imagem pelo `Dockerfile` da raiz e injeta `DB_URL`, `DB_USERNAME` e `DB_PASSWORD`. O health check usa `GET /status`, que não consulta o banco. O `render.yaml` descreve a mesma configuração.
+A API roda no **Render** como **Web Service com Docker** (plano Free), a partir deste repositório: **https://colheai-api.onrender.com**. O Render constrói a imagem pelo `Dockerfile` da raiz e injeta `DB_URL`, `DB_USERNAME` e `DB_PASSWORD`. O health check usa `GET /status`, que não consulta o banco. O `render.yaml` descreve a mesma configuração.
 
 ## Uso de IA
 
@@ -136,4 +137,4 @@ Usamos o **Claude (Anthropic, claude.ai)** como apoio técnico durante toda a di
 - **Código:** geração do código no estilo da aula, revisado por nós.
 - **Testes:** os testes (DAOs no Oracle, matriz com curl e coleção do Postman) apontaram erros reais, que foram corrigidos. Dois exemplos: o erro de API devolvido em HTML para navegador e a ordem das chaves do JSON no Spring Boot 4.
 
-Nada foi aceito sem rodar. As evidências de execução estão em `testes/`, e o registro completo do uso de IA está na documentação do grupo.
+Nada foi aceito sem rodar. As evidências de execução estão em `testes/`. A documentação técnica em PDF (diagrama de classes, DER, endpoints, regras, deploy) acompanha a entrega no Portal.
