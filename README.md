@@ -11,7 +11,7 @@
 |---|---|
 | API publicada (Render) | https://colheai-api.onrender.com (teste: [`/status`](https://colheai-api.onrender.com/status)) |
 | Repositório | https://github.com/EstevesArtur/colheai-api |
-| Vídeo (YouTube, não listado) | _[a incluir: o vídeo mostra o front-end integrado a esta API]_ |
+| Vídeo (YouTube, não listado) | https://youtu.be/ZbWZPhgyEnc |
 
 > No plano gratuito do Render, a API "dorme" depois de 15 minutos sem uso e leva cerca de 1 a 2 minutos para acordar. Abra `/status` e espere responder antes de testar.
 
