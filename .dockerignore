@@ -1,0 +1,13 @@
+# Arquivos que nao entram no build da imagem (deixa o envio ao Docker menor e
+# garante que nada local, como um .env com senha, va parar dentro da imagem).
+target/
+.git/
+.idea/
+.vscode/
+*.iml
+.env
+*.env
+testes/
+postman/
+sql/
+docs/

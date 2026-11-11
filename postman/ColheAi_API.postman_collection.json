@@ -1,0 +1,2138 @@
+{
+  "info": {
+    "_postman_id": "91b51d3f-e5b0-440c-aa9b-c5705d86b150",
+    "name": "ColheAí API - Since Young (GS 2026/2 DDD)",
+    "description": "API do ColheAí: chamadas públicas do PNAE, propostas da agricultura familiar com a regra dos R$ 40 mil por CAF e o painel da meta de 45% da EEx (Entidade Executora).\n\nSince Young · 1TDSPV-2026 · Artur Bianchini Esteves (RM569450) e João Vitor Oliveira Fontenele Martins (RM570783).\n\nComo usar: troque a variável baseUrl (aba Variables da coleção) para a URL do Render. As pastas 1 a 4 seguem a ordem da apresentação. A pasta 5 tem todas as rotas. Rode com o banco recém-carregado pelo script sql/colheai_ddd_tabelas.sql: os registros criados aqui são removidos ao final de cada pasta.",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "variable": [
+    {
+      "key": "baseUrl",
+      "value": "http://localhost:8080"
+    },
+    {
+      "key": "agricultorId",
+      "value": ""
+    },
+    {
+      "key": "propostaId",
+      "value": ""
+    },
+    {
+      "key": "entidadeId",
+      "value": ""
+    },
+    {
+      "key": "chamadaId",
+      "value": ""
+    },
+    {
+      "key": "itemId",
+      "value": ""
+    },
+    {
+      "key": "produtoId",
+      "value": ""
+    },
+    {
+      "key": "propostaRefId",
+      "value": ""
+    }
+  ],
+  "item": [
+    {
+      "name": "1. Acordar a API",
+      "description": "No plano gratuito do Render a API dorme sem uso. Abra esta rota 1 ou 2 minutos antes de apresentar.",
+      "item": [
+        {
+          "name": "GET /status",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Status 200', function () { pm.response.to.have.status(200); });",
+                  "pm.test('Resposta em JSON', function () { if (pm.response.code !== 204) pm.response.to.be.json; });"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/status",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "status"
+              ]
+            },
+            "description": ""
+          }
+        }
+      ]
+    },
+    {
+      "name": "2. CRUD completo (agricultor familiar)",
+      "description": "Cadastrar, listar, buscar, atualizar e remover, com 201 + Location, 200 e 204.",
+      "item": [
+        {
+          "name": "Cadastrar agricultor (201 + Location)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Status 201', function () { pm.response.to.have.status(201); });",
+                  "pm.test('Resposta em JSON', function () { if (pm.response.code !== 204) pm.response.to.be.json; });",
+                  "pm.test('Tem cabecalho Location', function () { pm.response.to.have.header('Location'); });",
+                  "pm.collectionVariables.set('agricultorId', pm.response.json().id);"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/agricultores",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "agricultores"
+              ]
+            },
+            "description": "",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"nome\": \"Cooperativa Verde de Juquitiba\",\n  \"caf\": \"SIM-CAF-PJ-0200\",\n  \"tipoFornecedor\": \"GRUPO_FORMAL\",\n  \"quantidadeFamilias\": 8,\n  \"municipio\": \"Juquitiba\",\n  \"uf\": \"SP\",\n  \"distrito\": null,\n  \"organico\": true,\n  \"telefone\": \"1140001234\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          }
+        },
+        {
+          "name": "Listar agricultores (200)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Status 200', function () { pm.response.to.have.status(200); });",
+                  "pm.test('Resposta em JSON', function () { if (pm.response.code !== 204) pm.response.to.be.json; });"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/agricultores",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "agricultores"
+              ]
+            },
+            "description": ""
+          }
+        },
+        {
+          "name": "Buscar agricultor por id (200)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Status 200', function () { pm.response.to.have.status(200); });",
+                  "pm.test('Resposta em JSON', function () { if (pm.response.code !== 204) pm.response.to.be.json; });"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/agricultores/{{agricultorId}}",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "agricultores",
+                "{{agricultorId}}"
+              ]
+            },
+            "description": ""
+          }
+        },
+        {
+          "name": "Atualizar agricultor (200)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Status 200', function () { pm.response.to.have.status(200); });",
+                  "pm.test('Resposta em JSON', function () { if (pm.response.code !== 204) pm.response.to.be.json; });"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/agricultores/{{agricultorId}}",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "agricultores",
+                "{{agricultorId}}"
+              ]
+            },
+            "description": "",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"nome\": \"Cooperativa Verde de Juquitiba (atualizada)\",\n  \"caf\": \"SIM-CAF-PJ-0200\",\n  \"tipoFornecedor\": \"GRUPO_FORMAL\",\n  \"quantidadeFamilias\": 9,\n  \"municipio\": \"Juquitiba\",\n  \"uf\": \"SP\",\n  \"distrito\": null,\n  \"organico\": true,\n  \"telefone\": \"1140001234\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          }
+        },
+        {
+          "name": "Remover agricultor (204)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Status 204', function () { pm.response.to.have.status(204); });",
+                  "pm.test('Resposta em JSON', function () { if (pm.response.code !== 204) pm.response.to.be.json; });"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "DELETE",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/agricultores/{{agricultorId}}",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "agricultores",
+                "{{agricultorId}}"
+              ]
+            },
+            "description": ""
+          }
+        },
+        {
+          "name": "Buscar o agricultor removido (404)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Status 404', function () { pm.response.to.have.status(404); });",
+                  "pm.test('Resposta em JSON', function () { if (pm.response.code !== 204) pm.response.to.be.json; });"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/agricultores/{{agricultorId}}",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "agricultores",
+                "{{agricultorId}}"
+              ]
+            },
+            "description": ""
+          }
+        }
+      ]
+    },
+    {
+      "name": "3. Erros ao vivo",
+      "description": "Os erros que a rubrica pede ao vivo (400 e 404) e os outros do contrato HTTP. Todos no mesmo JSON de erro.",
+      "item": [
+        {
+          "name": "400 - cadastro inválido (campos vazios e fora da regra)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Status 400', function () { pm.response.to.have.status(400); });",
+                  "pm.test('Resposta em JSON', function () { if (pm.response.code !== 204) pm.response.to.be.json; });"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/agricultores",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "agricultores"
+              ]
+            },
+            "description": "",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"nome\": \"\",\n  \"caf\": \"\",\n  \"tipoFornecedor\": \"INDIVIDUAL\",\n  \"quantidadeFamilias\": 3,\n  \"municipio\": \"São Paulo\",\n  \"uf\": \"sp\",\n  \"organico\": false,\n  \"telefone\": \"abc\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          }
+        },
+        {
+          "name": "404 - id que não existe",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Status 404', function () { pm.response.to.have.status(404); });",
+                  "pm.test('Resposta em JSON', function () { if (pm.response.code !== 204) pm.response.to.be.json; });"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/agricultores/999",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "agricultores",
+                "999"
+              ]
+            },
+            "description": ""
+          }
+        },
+        {
+          "name": "409 - CAF já cadastrado",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Status 409', function () { pm.response.to.have.status(409); });",
+                  "pm.test('Resposta em JSON', function () { if (pm.response.code !== 204) pm.response.to.be.json; });"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/agricultores",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "agricultores"
+              ]
+            },
+            "description": "",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"nome\": \"Outra Maria\",\n  \"caf\": \"SIM-CAF-PF-0001\",\n  \"tipoFornecedor\": \"INDIVIDUAL\",\n  \"quantidadeFamilias\": 1,\n  \"municipio\": \"São Paulo\",\n  \"uf\": \"SP\",\n  \"organico\": false\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          }
+        },
+        {
+          "name": "409 - remover agricultor que tem propostas",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Status 409', function () { pm.response.to.have.status(409); });",
+                  "pm.test('Resposta em JSON', function () { if (pm.response.code !== 204) pm.response.to.be.json; });"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "DELETE",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/agricultores/1",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "agricultores",
+                "1"
+              ]
+            },
+            "description": ""
+          }
+        },
+        {
+          "name": "405 - método não suportado",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Status 405', function () { pm.response.to.have.status(405); });",
+                  "pm.test('Resposta em JSON', function () { if (pm.response.code !== 204) pm.response.to.be.json; });"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "PATCH",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/chamadas/1",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "chamadas",
+                "1"
+              ]
+            },
+            "description": "",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"status\": \"ABERTA\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          }
+        },
+        {
+          "name": "404 - rota que não existe",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Status 404', function () { pm.response.to.have.status(404); });",
+                  "pm.test('Resposta em JSON', function () { if (pm.response.code !== 204) pm.response.to.be.json; });"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/rota-que-nao-existe",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "rota-que-nao-existe"
+              ]
+            },
+            "description": ""
+          }
+        },
+        {
+          "name": "400 - JSON malformado",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Status 400', function () { pm.response.to.have.status(400); });",
+                  "pm.test('Resposta em JSON', function () { if (pm.response.code !== 204) pm.response.to.be.json; });"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/agricultores",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "agricultores"
+              ]
+            },
+            "description": "",
+            "body": {
+              "mode": "raw",
+              "raw": "{\"nome\": \"sem fechar a chave\"",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "4. Fluxo do MVP (chamada, proposta e meta)",
+      "description": "O caminho do agricultor e da prefeitura: chamadas abertas, itens da chamada, proposta com a regra dos R$ 40 mil e o painel da meta de 45%.",
+      "item": [
+        {
+          "name": "Chamadas abertas",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Status 200', function () { pm.response.to.have.status(200); });",
+                  "pm.test('Resposta em JSON', function () { if (pm.response.code !== 204) pm.response.to.be.json; });"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/chamadas?status=ABERTA",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "chamadas"
+              ],
+              "query": [
+                {
+                  "key": "status",
+                  "value": "ABERTA"
+                }
+              ]
+            },
+            "description": ""
+          }
+        },
+        {
+          "name": "Detalhe da chamada 3",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Status 200', function () { pm.response.to.have.status(200); });",
+                  "pm.test('Resposta em JSON', function () { if (pm.response.code !== 204) pm.response.to.be.json; });"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/chamadas/3",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "chamadas",
+                "3"
+              ]
+            },
+            "description": ""
+          }
+        },
+        {
+          "name": "Itens da chamada 3 (produto, quantidade, preço)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Status 200', function () { pm.response.to.have.status(200); });",
+                  "pm.test('Resposta em JSON', function () { if (pm.response.code !== 204) pm.response.to.be.json; });"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/chamadas/3/itens",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "chamadas",
+                "3",
+                "itens"
+              ]
+            },
+            "description": ""
+          }
+        },
+        {
+          "name": "Proposta válida: Benedito oferta batata-doce (201)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Status 201', function () { pm.response.to.have.status(201); });",
+                  "pm.test('Resposta em JSON', function () { if (pm.response.code !== 204) pm.response.to.be.json; });",
+                  "pm.test('Tem cabecalho Location', function () { pm.response.to.have.header('Location'); });",
+                  "pm.collectionVariables.set('propostaId', pm.response.json().id);"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/itens/9/propostas",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "itens",
+                "9",
+                "propostas"
+              ]
+            },
+            "description": "Benedito Ramos (CAF SIM-CAF-PF-0009) ainda não vendeu para São Paulo em 2026: 1.000 kg x R$ 4,80 = R$ 4.800,00.",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"agricultor\": {\n    \"id\": 9\n  },\n  \"quantidade\": 1000\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          }
+        },
+        {
+          "name": "409 - regra dos R$ 40 mil (Maria passaria do teto)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Status 409', function () { pm.response.to.have.status(409); });",
+                  "pm.test('Resposta em JSON', function () { if (pm.response.code !== 204) pm.response.to.be.json; });"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/itens/7/propostas",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "itens",
+                "7",
+                "propostas"
+              ]
+            },
+            "description": "Maria (CAF SIM-CAF-PF-0001) já tem R$ 27.800,00 comprometidos com São Paulo em 2026. 5.000 x R$ 2,60 = R$ 13.000,00 passaria do teto de R$ 40.000,00 (restam R$ 12.200,00).",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"agricultor\": {\n    \"id\": 1\n  },\n  \"quantidade\": 5000\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          }
+        },
+        {
+          "name": "409 - proposta para chamada que não está aberta",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Status 409', function () { pm.response.to.have.status(409); });",
+                  "pm.test('Resposta em JSON', function () { if (pm.response.code !== 204) pm.response.to.be.json; });"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/itens/5/propostas",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "itens",
+                "5",
+                "propostas"
+              ]
+            },
+            "description": "",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"agricultor\": {\n    \"id\": 9\n  },\n  \"quantidade\": 100\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          }
+        },
+        {
+          "name": "Contratar a proposta do Benedito (PUT 200)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Status 200', function () { pm.response.to.have.status(200); });",
+                  "pm.test('Resposta em JSON', function () { if (pm.response.code !== 204) pm.response.to.be.json; });"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/propostas/{{propostaId}}",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "propostas",
+                "{{propostaId}}"
+              ]
+            },
+            "description": "",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"quantidade\": 1000,\n  \"status\": \"CONTRATADA\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          }
+        },
+        {
+          "name": "Painel da meta de 45% de São Paulo",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Status 200', function () { pm.response.to.have.status(200); });",
+                  "pm.test('Resposta em JSON', function () { if (pm.response.code !== 204) pm.response.to.be.json; });"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/entidades/1/meta",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "entidades",
+                "1",
+                "meta"
+              ]
+            },
+            "description": ""
+          }
+        },
+        {
+          "name": "Propostas do Benedito",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Status 200', function () { pm.response.to.have.status(200); });",
+                  "pm.test('Resposta em JSON', function () { if (pm.response.code !== 204) pm.response.to.be.json; });"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/agricultores/9/propostas",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "agricultores",
+                "9",
+                "propostas"
+              ]
+            },
+            "description": ""
+          }
+        },
+        {
+          "name": "Desfazer: remover a proposta da demonstração (204)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Status 204', function () { pm.response.to.have.status(204); });",
+                  "pm.test('Resposta em JSON', function () { if (pm.response.code !== 204) pm.response.to.be.json; });"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "DELETE",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/propostas/{{propostaId}}",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "propostas",
+                "{{propostaId}}"
+              ]
+            },
+            "description": ""
+          }
+        }
+      ]
+    },
+    {
+      "name": "5. Todas as rotas (referência)",
+      "description": "Todas as rotas da API, entidade por entidade. Cada subpasta remove o que criou.",
+      "item": [
+        {
+          "name": "EEx (Entidade Executora)",
+          "description": "",
+          "item": [
+            {
+              "name": "POST /entidades (201)",
+              "event": [
+                {
+                  "listen": "test",
+                  "script": {
+                    "type": "text/javascript",
+                    "exec": [
+                      "pm.test('Status 201', function () { pm.response.to.have.status(201); });",
+                      "pm.test('Resposta em JSON', function () { if (pm.response.code !== 204) pm.response.to.be.json; });",
+                      "pm.test('Tem cabecalho Location', function () { pm.response.to.have.header('Location'); });",
+                      "pm.collectionVariables.set('entidadeId', pm.response.json().id);"
+                    ]
+                  }
+                }
+              ],
+              "request": {
+                "method": "POST",
+                "header": [
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  }
+                ],
+                "url": {
+                  "raw": "{{baseUrl}}/entidades",
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "path": [
+                    "entidades"
+                  ]
+                },
+                "description": "",
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"nome\": \"Prefeitura de Juquitiba - Secretaria de Educação\",\n  \"municipio\": \"Juquitiba\",\n  \"uf\": \"SP\",\n  \"codigoIbge\": 3526209,\n  \"repasseAnual\": 180000.0,\n  \"anoRepasse\": 2026\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                }
+              }
+            },
+            {
+              "name": "GET /entidades (200)",
+              "event": [
+                {
+                  "listen": "test",
+                  "script": {
+                    "type": "text/javascript",
+                    "exec": [
+                      "pm.test('Status 200', function () { pm.response.to.have.status(200); });",
+                      "pm.test('Resposta em JSON', function () { if (pm.response.code !== 204) pm.response.to.be.json; });"
+                    ]
+                  }
+                }
+              ],
+              "request": {
+                "method": "GET",
+                "header": [],
+                "url": {
+                  "raw": "{{baseUrl}}/entidades",
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "path": [
+                    "entidades"
+                  ]
+                },
+                "description": ""
+              }
+            },
+            {
+              "name": "GET /entidades/{id} (200)",
+              "event": [
+                {
+                  "listen": "test",
+                  "script": {
+                    "type": "text/javascript",
+                    "exec": [
+                      "pm.test('Status 200', function () { pm.response.to.have.status(200); });",
+                      "pm.test('Resposta em JSON', function () { if (pm.response.code !== 204) pm.response.to.be.json; });"
+                    ]
+                  }
+                }
+              ],
+              "request": {
+                "method": "GET",
+                "header": [],
+                "url": {
+                  "raw": "{{baseUrl}}/entidades/{{entidadeId}}",
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "path": [
+                    "entidades",
+                    "{{entidadeId}}"
+                  ]
+                },
+                "description": ""
+              }
+            },
+            {
+              "name": "PUT /entidades/{id} (200)",
+              "event": [
+                {
+                  "listen": "test",
+                  "script": {
+                    "type": "text/javascript",
+                    "exec": [
+                      "pm.test('Status 200', function () { pm.response.to.have.status(200); });",
+                      "pm.test('Resposta em JSON', function () { if (pm.response.code !== 204) pm.response.to.be.json; });"
+                    ]
+                  }
+                }
+              ],
+              "request": {
+                "method": "PUT",
+                "header": [
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  }
+                ],
+                "url": {
+                  "raw": "{{baseUrl}}/entidades/{{entidadeId}}",
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "path": [
+                    "entidades",
+                    "{{entidadeId}}"
+                  ]
+                },
+                "description": "",
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"nome\": \"Prefeitura de Juquitiba - Secretaria de Educação\",\n  \"municipio\": \"Juquitiba\",\n  \"uf\": \"SP\",\n  \"codigoIbge\": 3526209,\n  \"repasseAnual\": 185000.0,\n  \"anoRepasse\": 2026\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                }
+              }
+            },
+            {
+              "name": "POST /entidades - IBGE repetido (409)",
+              "event": [
+                {
+                  "listen": "test",
+                  "script": {
+                    "type": "text/javascript",
+                    "exec": [
+                      "pm.test('Status 409', function () { pm.response.to.have.status(409); });",
+                      "pm.test('Resposta em JSON', function () { if (pm.response.code !== 204) pm.response.to.be.json; });"
+                    ]
+                  }
+                }
+              ],
+              "request": {
+                "method": "POST",
+                "header": [
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  }
+                ],
+                "url": {
+                  "raw": "{{baseUrl}}/entidades",
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "path": [
+                    "entidades"
+                  ]
+                },
+                "description": "",
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"nome\": \"Prefeitura de Juquitiba - Secretaria de Educação\",\n  \"municipio\": \"Juquitiba\",\n  \"uf\": \"SP\",\n  \"codigoIbge\": 3550308,\n  \"repasseAnual\": 180000.0,\n  \"anoRepasse\": 2026\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                }
+              }
+            },
+            {
+              "name": "POST /entidades/{id}/chamadas (201)",
+              "event": [
+                {
+                  "listen": "test",
+                  "script": {
+                    "type": "text/javascript",
+                    "exec": [
+                      "pm.test('Status 201', function () { pm.response.to.have.status(201); });",
+                      "pm.test('Resposta em JSON', function () { if (pm.response.code !== 204) pm.response.to.be.json; });",
+                      "pm.test('Tem cabecalho Location', function () { pm.response.to.have.header('Location'); });",
+                      "pm.collectionVariables.set('chamadaId', pm.response.json().id);"
+                    ]
+                  }
+                }
+              ],
+              "request": {
+                "method": "POST",
+                "header": [
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  }
+                ],
+                "url": {
+                  "raw": "{{baseUrl}}/entidades/{{entidadeId}}/chamadas",
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "path": [
+                    "entidades",
+                    "{{entidadeId}}",
+                    "chamadas"
+                  ]
+                },
+                "description": "",
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"numeroEdital\": \"001/2026\",\n  \"objeto\": \"Hortaliças para as escolas de Juquitiba\",\n  \"dataAbertura\": \"2026-11-10\",\n  \"dataEncerramento\": \"2026-12-10\",\n  \"status\": \"ABERTA\"\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                }
+              }
+            },
+            {
+              "name": "GET /entidades/{id}/chamadas (200)",
+              "event": [
+                {
+                  "listen": "test",
+                  "script": {
+                    "type": "text/javascript",
+                    "exec": [
+                      "pm.test('Status 200', function () { pm.response.to.have.status(200); });",
+                      "pm.test('Resposta em JSON', function () { if (pm.response.code !== 204) pm.response.to.be.json; });"
+                    ]
+                  }
+                }
+              ],
+              "request": {
+                "method": "GET",
+                "header": [],
+                "url": {
+                  "raw": "{{baseUrl}}/entidades/{{entidadeId}}/chamadas",
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "path": [
+                    "entidades",
+                    "{{entidadeId}}",
+                    "chamadas"
+                  ]
+                },
+                "description": ""
+              }
+            },
+            {
+              "name": "GET /entidades/{id}/meta (200)",
+              "event": [
+                {
+                  "listen": "test",
+                  "script": {
+                    "type": "text/javascript",
+                    "exec": [
+                      "pm.test('Status 200', function () { pm.response.to.have.status(200); });",
+                      "pm.test('Resposta em JSON', function () { if (pm.response.code !== 204) pm.response.to.be.json; });"
+                    ]
+                  }
+                }
+              ],
+              "request": {
+                "method": "GET",
+                "header": [],
+                "url": {
+                  "raw": "{{baseUrl}}/entidades/{{entidadeId}}/meta",
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "path": [
+                    "entidades",
+                    "{{entidadeId}}",
+                    "meta"
+                  ]
+                },
+                "description": ""
+              }
+            }
+          ]
+        },
+        {
+          "name": "Chamada pública",
+          "description": "",
+          "item": [
+            {
+              "name": "GET /chamadas (200)",
+              "event": [
+                {
+                  "listen": "test",
+                  "script": {
+                    "type": "text/javascript",
+                    "exec": [
+                      "pm.test('Status 200', function () { pm.response.to.have.status(200); });",
+                      "pm.test('Resposta em JSON', function () { if (pm.response.code !== 204) pm.response.to.be.json; });"
+                    ]
+                  }
+                }
+              ],
+              "request": {
+                "method": "GET",
+                "header": [],
+                "url": {
+                  "raw": "{{baseUrl}}/chamadas",
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "path": [
+                    "chamadas"
+                  ]
+                },
+                "description": ""
+              }
+            },
+            {
+              "name": "GET /chamadas/{id} (200)",
+              "event": [
+                {
+                  "listen": "test",
+                  "script": {
+                    "type": "text/javascript",
+                    "exec": [
+                      "pm.test('Status 200', function () { pm.response.to.have.status(200); });",
+                      "pm.test('Resposta em JSON', function () { if (pm.response.code !== 204) pm.response.to.be.json; });"
+                    ]
+                  }
+                }
+              ],
+              "request": {
+                "method": "GET",
+                "header": [],
+                "url": {
+                  "raw": "{{baseUrl}}/chamadas/{{chamadaId}}",
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "path": [
+                    "chamadas",
+                    "{{chamadaId}}"
+                  ]
+                },
+                "description": ""
+              }
+            },
+            {
+              "name": "PUT /chamadas/{id} (200)",
+              "event": [
+                {
+                  "listen": "test",
+                  "script": {
+                    "type": "text/javascript",
+                    "exec": [
+                      "pm.test('Status 200', function () { pm.response.to.have.status(200); });",
+                      "pm.test('Resposta em JSON', function () { if (pm.response.code !== 204) pm.response.to.be.json; });"
+                    ]
+                  }
+                }
+              ],
+              "request": {
+                "method": "PUT",
+                "header": [
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  }
+                ],
+                "url": {
+                  "raw": "{{baseUrl}}/chamadas/{{chamadaId}}",
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "path": [
+                    "chamadas",
+                    "{{chamadaId}}"
+                  ]
+                },
+                "description": "",
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"numeroEdital\": \"001/2026\",\n  \"objeto\": \"Hortaliças para as escolas de Juquitiba\",\n  \"dataAbertura\": \"2026-11-10\",\n  \"dataEncerramento\": \"2026-12-15\",\n  \"status\": \"ABERTA\"\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                }
+              }
+            },
+            {
+              "name": "POST /chamadas/{id}/itens (201)",
+              "event": [
+                {
+                  "listen": "test",
+                  "script": {
+                    "type": "text/javascript",
+                    "exec": [
+                      "pm.test('Status 201', function () { pm.response.to.have.status(201); });",
+                      "pm.test('Resposta em JSON', function () { if (pm.response.code !== 204) pm.response.to.be.json; });",
+                      "pm.test('Tem cabecalho Location', function () { pm.response.to.have.header('Location'); });",
+                      "pm.collectionVariables.set('itemId', pm.response.json().id);"
+                    ]
+                  }
+                }
+              ],
+              "request": {
+                "method": "POST",
+                "header": [
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  }
+                ],
+                "url": {
+                  "raw": "{{baseUrl}}/chamadas/{{chamadaId}}/itens",
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "path": [
+                    "chamadas",
+                    "{{chamadaId}}",
+                    "itens"
+                  ]
+                },
+                "description": "",
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"produto\": {\n    \"id\": 2\n  },\n  \"quantidadeDemandada\": 3000,\n  \"precoUnitario\": 3.4\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                }
+              }
+            },
+            {
+              "name": "GET /chamadas/{id}/itens (200)",
+              "event": [
+                {
+                  "listen": "test",
+                  "script": {
+                    "type": "text/javascript",
+                    "exec": [
+                      "pm.test('Status 200', function () { pm.response.to.have.status(200); });",
+                      "pm.test('Resposta em JSON', function () { if (pm.response.code !== 204) pm.response.to.be.json; });"
+                    ]
+                  }
+                }
+              ],
+              "request": {
+                "method": "GET",
+                "header": [],
+                "url": {
+                  "raw": "{{baseUrl}}/chamadas/{{chamadaId}}/itens",
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "path": [
+                    "chamadas",
+                    "{{chamadaId}}",
+                    "itens"
+                  ]
+                },
+                "description": ""
+              }
+            },
+            {
+              "name": "DELETE /chamadas/{id} com itens (409)",
+              "event": [
+                {
+                  "listen": "test",
+                  "script": {
+                    "type": "text/javascript",
+                    "exec": [
+                      "pm.test('Status 409', function () { pm.response.to.have.status(409); });",
+                      "pm.test('Resposta em JSON', function () { if (pm.response.code !== 204) pm.response.to.be.json; });"
+                    ]
+                  }
+                }
+              ],
+              "request": {
+                "method": "DELETE",
+                "header": [],
+                "url": {
+                  "raw": "{{baseUrl}}/chamadas/{{chamadaId}}",
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "path": [
+                    "chamadas",
+                    "{{chamadaId}}"
+                  ]
+                },
+                "description": ""
+              }
+            }
+          ]
+        },
+        {
+          "name": "Item da chamada",
+          "description": "",
+          "item": [
+            {
+              "name": "GET /itens (200)",
+              "event": [
+                {
+                  "listen": "test",
+                  "script": {
+                    "type": "text/javascript",
+                    "exec": [
+                      "pm.test('Status 200', function () { pm.response.to.have.status(200); });",
+                      "pm.test('Resposta em JSON', function () { if (pm.response.code !== 204) pm.response.to.be.json; });"
+                    ]
+                  }
+                }
+              ],
+              "request": {
+                "method": "GET",
+                "header": [],
+                "url": {
+                  "raw": "{{baseUrl}}/itens",
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "path": [
+                    "itens"
+                  ]
+                },
+                "description": ""
+              }
+            },
+            {
+              "name": "GET /itens/{id} (200)",
+              "event": [
+                {
+                  "listen": "test",
+                  "script": {
+                    "type": "text/javascript",
+                    "exec": [
+                      "pm.test('Status 200', function () { pm.response.to.have.status(200); });",
+                      "pm.test('Resposta em JSON', function () { if (pm.response.code !== 204) pm.response.to.be.json; });"
+                    ]
+                  }
+                }
+              ],
+              "request": {
+                "method": "GET",
+                "header": [],
+                "url": {
+                  "raw": "{{baseUrl}}/itens/{{itemId}}",
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "path": [
+                    "itens",
+                    "{{itemId}}"
+                  ]
+                },
+                "description": ""
+              }
+            },
+            {
+              "name": "PUT /itens/{id} (200)",
+              "event": [
+                {
+                  "listen": "test",
+                  "script": {
+                    "type": "text/javascript",
+                    "exec": [
+                      "pm.test('Status 200', function () { pm.response.to.have.status(200); });",
+                      "pm.test('Resposta em JSON', function () { if (pm.response.code !== 204) pm.response.to.be.json; });"
+                    ]
+                  }
+                }
+              ],
+              "request": {
+                "method": "PUT",
+                "header": [
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  }
+                ],
+                "url": {
+                  "raw": "{{baseUrl}}/itens/{{itemId}}",
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "path": [
+                    "itens",
+                    "{{itemId}}"
+                  ]
+                },
+                "description": "",
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"produto\": {\n    \"id\": 2\n  },\n  \"quantidadeDemandada\": 3500,\n  \"precoUnitario\": 3.4\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                }
+              }
+            },
+            {
+              "name": "POST /itens/{id}/propostas (201)",
+              "event": [
+                {
+                  "listen": "test",
+                  "script": {
+                    "type": "text/javascript",
+                    "exec": [
+                      "pm.test('Status 201', function () { pm.response.to.have.status(201); });",
+                      "pm.test('Resposta em JSON', function () { if (pm.response.code !== 204) pm.response.to.be.json; });",
+                      "pm.test('Tem cabecalho Location', function () { pm.response.to.have.header('Location'); });",
+                      "pm.collectionVariables.set('propostaRefId', pm.response.json().id);"
+                    ]
+                  }
+                }
+              ],
+              "request": {
+                "method": "POST",
+                "header": [
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  }
+                ],
+                "url": {
+                  "raw": "{{baseUrl}}/itens/{{itemId}}/propostas",
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "path": [
+                    "itens",
+                    "{{itemId}}",
+                    "propostas"
+                  ]
+                },
+                "description": "",
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"agricultor\": {\n    \"id\": 10\n  },\n  \"quantidade\": 500\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                }
+              }
+            },
+            {
+              "name": "GET /itens/{id}/propostas (200)",
+              "event": [
+                {
+                  "listen": "test",
+                  "script": {
+                    "type": "text/javascript",
+                    "exec": [
+                      "pm.test('Status 200', function () { pm.response.to.have.status(200); });",
+                      "pm.test('Resposta em JSON', function () { if (pm.response.code !== 204) pm.response.to.be.json; });"
+                    ]
+                  }
+                }
+              ],
+              "request": {
+                "method": "GET",
+                "header": [],
+                "url": {
+                  "raw": "{{baseUrl}}/itens/{{itemId}}/propostas",
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "path": [
+                    "itens",
+                    "{{itemId}}",
+                    "propostas"
+                  ]
+                },
+                "description": ""
+              }
+            }
+          ]
+        },
+        {
+          "name": "Proposta",
+          "description": "",
+          "item": [
+            {
+              "name": "GET /propostas (200)",
+              "event": [
+                {
+                  "listen": "test",
+                  "script": {
+                    "type": "text/javascript",
+                    "exec": [
+                      "pm.test('Status 200', function () { pm.response.to.have.status(200); });",
+                      "pm.test('Resposta em JSON', function () { if (pm.response.code !== 204) pm.response.to.be.json; });"
+                    ]
+                  }
+                }
+              ],
+              "request": {
+                "method": "GET",
+                "header": [],
+                "url": {
+                  "raw": "{{baseUrl}}/propostas",
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "path": [
+                    "propostas"
+                  ]
+                },
+                "description": ""
+              }
+            },
+            {
+              "name": "GET /propostas/{id} (200)",
+              "event": [
+                {
+                  "listen": "test",
+                  "script": {
+                    "type": "text/javascript",
+                    "exec": [
+                      "pm.test('Status 200', function () { pm.response.to.have.status(200); });",
+                      "pm.test('Resposta em JSON', function () { if (pm.response.code !== 204) pm.response.to.be.json; });"
+                    ]
+                  }
+                }
+              ],
+              "request": {
+                "method": "GET",
+                "header": [],
+                "url": {
+                  "raw": "{{baseUrl}}/propostas/{{propostaRefId}}",
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "path": [
+                    "propostas",
+                    "{{propostaRefId}}"
+                  ]
+                },
+                "description": ""
+              }
+            },
+            {
+              "name": "PUT /propostas/{id} (200)",
+              "event": [
+                {
+                  "listen": "test",
+                  "script": {
+                    "type": "text/javascript",
+                    "exec": [
+                      "pm.test('Status 200', function () { pm.response.to.have.status(200); });",
+                      "pm.test('Resposta em JSON', function () { if (pm.response.code !== 204) pm.response.to.be.json; });"
+                    ]
+                  }
+                }
+              ],
+              "request": {
+                "method": "PUT",
+                "header": [
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  }
+                ],
+                "url": {
+                  "raw": "{{baseUrl}}/propostas/{{propostaRefId}}",
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "path": [
+                    "propostas",
+                    "{{propostaRefId}}"
+                  ]
+                },
+                "description": "",
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"quantidade\": 600,\n  \"status\": \"ENVIADA\"\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                }
+              }
+            },
+            {
+              "name": "DELETE /propostas/{id} (204)",
+              "event": [
+                {
+                  "listen": "test",
+                  "script": {
+                    "type": "text/javascript",
+                    "exec": [
+                      "pm.test('Status 204', function () { pm.response.to.have.status(204); });",
+                      "pm.test('Resposta em JSON', function () { if (pm.response.code !== 204) pm.response.to.be.json; });"
+                    ]
+                  }
+                }
+              ],
+              "request": {
+                "method": "DELETE",
+                "header": [],
+                "url": {
+                  "raw": "{{baseUrl}}/propostas/{{propostaRefId}}",
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "path": [
+                    "propostas",
+                    "{{propostaRefId}}"
+                  ]
+                },
+                "description": ""
+              }
+            }
+          ]
+        },
+        {
+          "name": "Produto",
+          "description": "",
+          "item": [
+            {
+              "name": "POST /produtos (201)",
+              "event": [
+                {
+                  "listen": "test",
+                  "script": {
+                    "type": "text/javascript",
+                    "exec": [
+                      "pm.test('Status 201', function () { pm.response.to.have.status(201); });",
+                      "pm.test('Resposta em JSON', function () { if (pm.response.code !== 204) pm.response.to.be.json; });",
+                      "pm.test('Tem cabecalho Location', function () { pm.response.to.have.header('Location'); });",
+                      "pm.collectionVariables.set('produtoId', pm.response.json().id);"
+                    ]
+                  }
+                }
+              ],
+              "request": {
+                "method": "POST",
+                "header": [
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  }
+                ],
+                "url": {
+                  "raw": "{{baseUrl}}/produtos",
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "path": [
+                    "produtos"
+                  ]
+                },
+                "description": "",
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"nome\": \"Abobrinha\",\n  \"categoria\": \"HORTALICA\",\n  \"unidadeMedida\": \"KG\"\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                }
+              }
+            },
+            {
+              "name": "GET /produtos (200)",
+              "event": [
+                {
+                  "listen": "test",
+                  "script": {
+                    "type": "text/javascript",
+                    "exec": [
+                      "pm.test('Status 200', function () { pm.response.to.have.status(200); });",
+                      "pm.test('Resposta em JSON', function () { if (pm.response.code !== 204) pm.response.to.be.json; });"
+                    ]
+                  }
+                }
+              ],
+              "request": {
+                "method": "GET",
+                "header": [],
+                "url": {
+                  "raw": "{{baseUrl}}/produtos",
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "path": [
+                    "produtos"
+                  ]
+                },
+                "description": ""
+              }
+            },
+            {
+              "name": "GET /produtos/{id} (200)",
+              "event": [
+                {
+                  "listen": "test",
+                  "script": {
+                    "type": "text/javascript",
+                    "exec": [
+                      "pm.test('Status 200', function () { pm.response.to.have.status(200); });",
+                      "pm.test('Resposta em JSON', function () { if (pm.response.code !== 204) pm.response.to.be.json; });"
+                    ]
+                  }
+                }
+              ],
+              "request": {
+                "method": "GET",
+                "header": [],
+                "url": {
+                  "raw": "{{baseUrl}}/produtos/{{produtoId}}",
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "path": [
+                    "produtos",
+                    "{{produtoId}}"
+                  ]
+                },
+                "description": ""
+              }
+            },
+            {
+              "name": "PUT /produtos/{id} (200)",
+              "event": [
+                {
+                  "listen": "test",
+                  "script": {
+                    "type": "text/javascript",
+                    "exec": [
+                      "pm.test('Status 200', function () { pm.response.to.have.status(200); });",
+                      "pm.test('Resposta em JSON', function () { if (pm.response.code !== 204) pm.response.to.be.json; });"
+                    ]
+                  }
+                }
+              ],
+              "request": {
+                "method": "PUT",
+                "header": [
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  }
+                ],
+                "url": {
+                  "raw": "{{baseUrl}}/produtos/{{produtoId}}",
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "path": [
+                    "produtos",
+                    "{{produtoId}}"
+                  ]
+                },
+                "description": "",
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"nome\": \"Abobrinha italiana\",\n  \"categoria\": \"HORTALICA\",\n  \"unidadeMedida\": \"KG\"\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                }
+              }
+            },
+            {
+              "name": "DELETE /produtos/{id} usado em item (409)",
+              "event": [
+                {
+                  "listen": "test",
+                  "script": {
+                    "type": "text/javascript",
+                    "exec": [
+                      "pm.test('Status 409', function () { pm.response.to.have.status(409); });",
+                      "pm.test('Resposta em JSON', function () { if (pm.response.code !== 204) pm.response.to.be.json; });"
+                    ]
+                  }
+                }
+              ],
+              "request": {
+                "method": "DELETE",
+                "header": [],
+                "url": {
+                  "raw": "{{baseUrl}}/produtos/4",
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "path": [
+                    "produtos",
+                    "4"
+                  ]
+                },
+                "description": ""
+              }
+            },
+            {
+              "name": "DELETE /produtos/{id} (204)",
+              "event": [
+                {
+                  "listen": "test",
+                  "script": {
+                    "type": "text/javascript",
+                    "exec": [
+                      "pm.test('Status 204', function () { pm.response.to.have.status(204); });",
+                      "pm.test('Resposta em JSON', function () { if (pm.response.code !== 204) pm.response.to.be.json; });"
+                    ]
+                  }
+                }
+              ],
+              "request": {
+                "method": "DELETE",
+                "header": [],
+                "url": {
+                  "raw": "{{baseUrl}}/produtos/{{produtoId}}",
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "path": [
+                    "produtos",
+                    "{{produtoId}}"
+                  ]
+                },
+                "description": ""
+              }
+            }
+          ]
+        },
+        {
+          "name": "Agricultor",
+          "description": "",
+          "item": [
+            {
+              "name": "GET /agricultores/{id}/propostas (200)",
+              "event": [
+                {
+                  "listen": "test",
+                  "script": {
+                    "type": "text/javascript",
+                    "exec": [
+                      "pm.test('Status 200', function () { pm.response.to.have.status(200); });",
+                      "pm.test('Resposta em JSON', function () { if (pm.response.code !== 204) pm.response.to.be.json; });"
+                    ]
+                  }
+                }
+              ],
+              "request": {
+                "method": "GET",
+                "header": [],
+                "url": {
+                  "raw": "{{baseUrl}}/agricultores/1/propostas",
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "path": [
+                    "agricultores",
+                    "1",
+                    "propostas"
+                  ]
+                },
+                "description": ""
+              }
+            }
+          ]
+        },
+        {
+          "name": "Limpeza (remove o que a pasta 5 criou)",
+          "description": "",
+          "item": [
+            {
+              "name": "DELETE /itens/{id} (204)",
+              "event": [
+                {
+                  "listen": "test",
+                  "script": {
+                    "type": "text/javascript",
+                    "exec": [
+                      "pm.test('Status 204', function () { pm.response.to.have.status(204); });",
+                      "pm.test('Resposta em JSON', function () { if (pm.response.code !== 204) pm.response.to.be.json; });"
+                    ]
+                  }
+                }
+              ],
+              "request": {
+                "method": "DELETE",
+                "header": [],
+                "url": {
+                  "raw": "{{baseUrl}}/itens/{{itemId}}",
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "path": [
+                    "itens",
+                    "{{itemId}}"
+                  ]
+                },
+                "description": ""
+              }
+            },
+            {
+              "name": "DELETE /chamadas/{id} (204)",
+              "event": [
+                {
+                  "listen": "test",
+                  "script": {
+                    "type": "text/javascript",
+                    "exec": [
+                      "pm.test('Status 204', function () { pm.response.to.have.status(204); });",
+                      "pm.test('Resposta em JSON', function () { if (pm.response.code !== 204) pm.response.to.be.json; });"
+                    ]
+                  }
+                }
+              ],
+              "request": {
+                "method": "DELETE",
+                "header": [],
+                "url": {
+                  "raw": "{{baseUrl}}/chamadas/{{chamadaId}}",
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "path": [
+                    "chamadas",
+                    "{{chamadaId}}"
+                  ]
+                },
+                "description": ""
+              }
+            },
+            {
+              "name": "DELETE /entidades/{id} (204)",
+              "event": [
+                {
+                  "listen": "test",
+                  "script": {
+                    "type": "text/javascript",
+                    "exec": [
+                      "pm.test('Status 204', function () { pm.response.to.have.status(204); });",
+                      "pm.test('Resposta em JSON', function () { if (pm.response.code !== 204) pm.response.to.be.json; });"
+                    ]
+                  }
+                }
+              ],
+              "request": {
+                "method": "DELETE",
+                "header": [],
+                "url": {
+                  "raw": "{{baseUrl}}/entidades/{{entidadeId}}",
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "path": [
+                    "entidades",
+                    "{{entidadeId}}"
+                  ]
+                },
+                "description": ""
+              }
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

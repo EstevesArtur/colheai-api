@@ -1,0 +1,27 @@
+# ============================================================================
+# ColheAi - API (GS 2026/2 - Domain Driven Design Using Java)
+# Since Young - 1TDSPV-2026
+# ----------------------------------------------------------------------------
+# Descricao do servico no Render (recurso "Blueprint"). O deploy do grupo foi
+# feito pelo painel (New > Web Service), com as mesmas configuracoes deste
+# arquivo; ele fica no repositorio como documentacao e para recriar o servico.
+#
+# Os valores das variaveis do banco NAO estao aqui: "sync: false" faz o Render
+# pedir o valor na tela, para nada sensivel ficar gravado no repositorio.
+# ============================================================================
+services:
+  - type: web
+    name: colheai-api
+    runtime: docker
+    plan: free
+    region: virginia
+    dockerfilePath: ./Dockerfile
+    dockerContext: .
+    healthCheckPath: /status
+    envVars:
+      - key: DB_URL
+        sync: false
+      - key: DB_USERNAME
+        sync: false
+      - key: DB_PASSWORD
+        sync: false

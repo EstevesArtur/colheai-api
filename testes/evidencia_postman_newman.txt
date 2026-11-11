@@ -1,0 +1,326 @@
+newman
+
+ColheAí API - Since Young (GS 2026/2 DDD)
+
+❏ 1. Acordar a API
+↳ GET /status
+  GET http://localhost:8080/status [200 OK, 276B, 18ms]
+  ✓  Status 200
+  ✓  Resposta em JSON
+
+❏ 2. CRUD completo (agricultor familiar)
+↳ Cadastrar agricultor (201 + Location)
+  POST http://localhost:8080/agricultores [201 Created, 539B, 13ms]
+  ✓  Status 201
+  ✓  Resposta em JSON
+  ✓  Tem cabecalho Location
+
+↳ Listar agricultores (200)
+  GET http://localhost:8080/agricultores [200 OK, 2.84kB, 8ms]
+  ✓  Status 200
+  ✓  Resposta em JSON
+
+↳ Buscar agricultor por id (200)
+  GET http://localhost:8080/agricultores/101 [200 OK, 484B, 5ms]
+  ✓  Status 200
+  ✓  Resposta em JSON
+
+↳ Atualizar agricultor (200)
+  PUT http://localhost:8080/agricultores/101 [200 OK, 497B, 9ms]
+  ✓  Status 200
+  ✓  Resposta em JSON
+
+↳ Remover agricultor (204)
+  DELETE http://localhost:8080/agricultores/101 [204 No Content, 201B, 5ms]
+  ✓  Status 204
+  ✓  Resposta em JSON
+
+↳ Buscar o agricultor removido (404)
+  GET http://localhost:8080/agricultores/101 [404 Not Found, 325B, 5ms]
+  ✓  Status 404
+  ✓  Resposta em JSON
+
+❏ 3. Erros ao vivo
+↳ 400 - cadastro inválido (campos vazios e fora da regra)
+  POST http://localhost:8080/agricultores [400 Bad Request, 595B, 4ms]
+  ✓  Status 400
+  ✓  Resposta em JSON
+
+↳ 404 - id que não existe
+  GET http://localhost:8080/agricultores/999 [404 Not Found, 325B, 19ms]
+  ✓  Status 404
+  ✓  Resposta em JSON
+
+↳ 409 - CAF já cadastrado
+  POST http://localhost:8080/agricultores [409 Conflict, 369B, 10ms]
+  ✓  Status 409
+  ✓  Resposta em JSON
+
+↳ 409 - remover agricultor que tem propostas
+  DELETE http://localhost:8080/agricultores/1 [409 Conflict, 364B, 5ms]
+  ✓  Status 409
+  ✓  Resposta em JSON
+
+↳ 405 - método não suportado
+  PATCH http://localhost:8080/chamadas/1 [405 Method Not Allowed, 267B, 4ms]
+  ✓  Status 405
+  ✓  Resposta em JSON
+
+↳ 404 - rota que não existe
+  GET http://localhost:8080/rota-que-nao-existe [404 Not Found, 353B, 3ms]
+  ✓  Status 404
+  ✓  Resposta em JSON
+
+↳ 400 - JSON malformado
+  POST http://localhost:8080/agricultores [400 Bad Request, 386B, 3ms]
+  ✓  Status 400
+  ✓  Resposta em JSON
+
+❏ 4. Fluxo do MVP (chamada, proposta e meta)
+↳ Chamadas abertas
+  GET http://localhost:8080/chamadas?status=ABERTA [200 OK, 586B, 5ms]
+  ✓  Status 200
+  ✓  Resposta em JSON
+
+↳ Detalhe da chamada 3
+  GET http://localhost:8080/chamadas/3 [200 OK, 591B, 4ms]
+  ✓  Status 200
+  ✓  Resposta em JSON
+
+↳ Itens da chamada 3 (produto, quantidade, preço)
+  GET http://localhost:8080/chamadas/3/itens [200 OK, 914B, 5ms]
+  ✓  Status 200
+  ✓  Resposta em JSON
+
+↳ Proposta válida: Benedito oferta batata-doce (201)
+  POST http://localhost:8080/itens/9/propostas [201 Created, 793B, 13ms]
+  ✓  Status 201
+  ✓  Resposta em JSON
+  ✓  Tem cabecalho Location
+
+↳ 409 - regra dos R$ 40 mil (Maria passaria do teto)
+  POST http://localhost:8080/itens/7/propostas [409 Conflict, 495B, 11ms]
+  ✓  Status 409
+  ✓  Resposta em JSON
+
+↳ 409 - proposta para chamada que não está aberta
+  POST http://localhost:8080/itens/5/propostas [409 Conflict, 365B, 9ms]
+  ✓  Status 409
+  ✓  Resposta em JSON
+
+↳ Contratar a proposta do Benedito (PUT 200)
+  PUT http://localhost:8080/propostas/102 [200 OK, 772B, 13ms]
+  ✓  Status 200
+  ✓  Resposta em JSON
+
+↳ Painel da meta de 45% de São Paulo
+  GET http://localhost:8080/entidades/1/meta [200 OK, 546B, 6ms]
+  ✓  Status 200
+  ✓  Resposta em JSON
+
+↳ Propostas do Benedito
+  GET http://localhost:8080/agricultores/9/propostas [200 OK, 767B, 7ms]
+  ✓  Status 200
+  ✓  Resposta em JSON
+
+↳ Desfazer: remover a proposta da demonstração (204)
+  DELETE http://localhost:8080/propostas/102 [204 No Content, 201B, 5ms]
+  ✓  Status 204
+  ✓  Resposta em JSON
+
+❏ 5. Todas as rotas (referência) / EEx (Entidade Executora)
+↳ POST /entidades (201)
+  POST http://localhost:8080/entidades [201 Created, 472B, 11ms]
+  ✓  Status 201
+  ✓  Resposta em JSON
+  ✓  Tem cabecalho Location
+
+↳ GET /entidades (200)
+  GET http://localhost:8080/entidades [200 OK, 923B, 5ms]
+  ✓  Status 200
+  ✓  Resposta em JSON
+
+↳ GET /entidades/{id} (200)
+  GET http://localhost:8080/entidades/102 [200 OK, 420B, 4ms]
+  ✓  Status 200
+  ✓  Resposta em JSON
+
+↳ PUT /entidades/{id} (200)
+  PUT http://localhost:8080/entidades/102 [200 OK, 420B, 6ms]
+  ✓  Status 200
+  ✓  Resposta em JSON
+
+↳ POST /entidades - IBGE repetido (409)
+  POST http://localhost:8080/entidades [409 Conflict, 388B, 9ms]
+  ✓  Status 409
+  ✓  Resposta em JSON
+
+↳ POST /entidades/{id}/chamadas (201)
+  POST http://localhost:8080/entidades/102/chamadas [201 Created, 649B, 11ms]
+  ✓  Status 201
+  ✓  Resposta em JSON
+  ✓  Tem cabecalho Location
+
+↳ GET /entidades/{id}/chamadas (200)
+  GET http://localhost:8080/entidades/102/chamadas [200 OK, 593B, 7ms]
+  ✓  Status 200
+  ✓  Resposta em JSON
+
+↳ GET /entidades/{id}/meta (200)
+  GET http://localhost:8080/entidades/102/meta [200 OK, 559B, 6ms]
+  ✓  Status 200
+  ✓  Resposta em JSON
+
+❏ 5. Todas as rotas (referência) / Chamada pública
+↳ GET /chamadas (200)
+  GET http://localhost:8080/chamadas [200 OK, 2.72kB, 4ms]
+  ✓  Status 200
+  ✓  Resposta em JSON
+
+↳ GET /chamadas/{id} (200)
+  GET http://localhost:8080/chamadas/101 [200 OK, 598B, 4ms]
+  ✓  Status 200
+  ✓  Resposta em JSON
+
+↳ PUT /chamadas/{id} (200)
+  PUT http://localhost:8080/chamadas/101 [200 OK, 598B, 10ms]
+  ✓  Status 200
+  ✓  Resposta em JSON
+
+↳ POST /chamadas/{id}/itens (201)
+  POST http://localhost:8080/chamadas/101/itens [201 Created, 471B, 10ms]
+  ✓  Status 201
+  ✓  Resposta em JSON
+  ✓  Tem cabecalho Location
+
+↳ GET /chamadas/{id}/itens (200)
+  GET http://localhost:8080/chamadas/101/itens [200 OK, 418B, 5ms]
+  ✓  Status 200
+  ✓  Resposta em JSON
+
+↳ DELETE /chamadas/{id} com itens (409)
+  DELETE http://localhost:8080/chamadas/101 [409 Conflict, 364B, 7ms]
+  ✓  Status 409
+  ✓  Resposta em JSON
+
+❏ 5. Todas as rotas (referência) / Item da chamada
+↳ GET /itens (200)
+  GET http://localhost:8080/itens [200 OK, 3.39kB, 6ms]
+  ✓  Status 200
+  ✓  Resposta em JSON
+
+↳ GET /itens/{id} (200)
+  GET http://localhost:8080/itens/101 [200 OK, 423B, 4ms]
+  ✓  Status 200
+  ✓  Resposta em JSON
+
+↳ PUT /itens/{id} (200)
+  PUT http://localhost:8080/itens/101 [200 OK, 423B, 13ms]
+  ✓  Status 200
+  ✓  Resposta em JSON
+
+↳ POST /itens/{id}/propostas (201)
+  POST http://localhost:8080/itens/101/propostas [201 Created, 806B, 14ms]
+  ✓  Status 201
+  ✓  Resposta em JSON
+  ✓  Tem cabecalho Location
+
+↳ GET /itens/{id}/propostas (200)
+  GET http://localhost:8080/itens/101/propostas [200 OK, 749B, 7ms]
+  ✓  Status 200
+  ✓  Resposta em JSON
+
+❏ 5. Todas as rotas (referência) / Proposta
+↳ GET /propostas (200)
+  GET http://localhost:8080/propostas [200 OK, 11.62kB, 27ms]
+  ✓  Status 200
+  ✓  Resposta em JSON
+
+↳ GET /propostas/{id} (200)
+  GET http://localhost:8080/propostas/103 [200 OK, 754B, 7ms]
+  ✓  Status 200
+  ✓  Resposta em JSON
+
+↳ PUT /propostas/{id} (200)
+  PUT http://localhost:8080/propostas/103 [200 OK, 754B, 11ms]
+  ✓  Status 200
+  ✓  Resposta em JSON
+
+↳ DELETE /propostas/{id} (204)
+  DELETE http://localhost:8080/propostas/103 [204 No Content, 201B, 4ms]
+  ✓  Status 204
+  ✓  Resposta em JSON
+
+❏ 5. Todas as rotas (referência) / Produto
+↳ POST /produtos (201)
+  POST http://localhost:8080/produtos [201 Created, 378B, 12ms]
+  ✓  Status 201
+  ✓  Resposta em JSON
+  ✓  Tem cabecalho Location
+
+↳ GET /produtos (200)
+  GET http://localhost:8080/produtos [200 OK, 1.08kB, 6ms]
+  ✓  Status 200
+  ✓  Resposta em JSON
+
+↳ GET /produtos/{id} (200)
+  GET http://localhost:8080/produtos/101 [200 OK, 327B, 3ms]
+  ✓  Status 200
+  ✓  Resposta em JSON
+
+↳ PUT /produtos/{id} (200)
+  PUT http://localhost:8080/produtos/101 [200 OK, 336B, 7ms]
+  ✓  Status 200
+  ✓  Resposta em JSON
+
+↳ DELETE /produtos/{id} usado em item (409)
+  DELETE http://localhost:8080/produtos/4 [409 Conflict, 364B, 5ms]
+  ✓  Status 409
+  ✓  Resposta em JSON
+
+↳ DELETE /produtos/{id} (204)
+  DELETE http://localhost:8080/produtos/101 [204 No Content, 201B, 11ms]
+  ✓  Status 204
+  ✓  Resposta em JSON
+
+❏ 5. Todas as rotas (referência) / Agricultor
+↳ GET /agricultores/{id}/propostas (200)
+  GET http://localhost:8080/agricultores/1/propostas [200 OK, 1.37kB, 14ms]
+  ✓  Status 200
+  ✓  Resposta em JSON
+
+❏ 5. Todas as rotas (referência) / Limpeza (remove o que a pasta 5 criou)
+↳ DELETE /itens/{id} (204)
+  DELETE http://localhost:8080/itens/101 [204 No Content, 201B, 4ms]
+  ✓  Status 204
+  ✓  Resposta em JSON
+
+↳ DELETE /chamadas/{id} (204)
+  DELETE http://localhost:8080/chamadas/101 [204 No Content, 201B, 4ms]
+  ✓  Status 204
+  ✓  Resposta em JSON
+
+↳ DELETE /entidades/{id} (204)
+  DELETE http://localhost:8080/entidades/102 [204 No Content, 201B, 4ms]
+  ✓  Status 204
+  ✓  Resposta em JSON
+
+┌─────────────────────────┬─────────────────┬─────────────────┐
+│                         │        executed │          failed │
+├─────────────────────────┼─────────────────┼─────────────────┤
+│              iterations │               1 │               0 │
+├─────────────────────────┼─────────────────┼─────────────────┤
+│                requests │              57 │               0 │
+├─────────────────────────┼─────────────────┼─────────────────┤
+│            test-scripts │              57 │               0 │
+├─────────────────────────┼─────────────────┼─────────────────┤
+│      prerequest-scripts │               0 │               0 │
+├─────────────────────────┼─────────────────┼─────────────────┤
+│              assertions │             121 │               0 │
+├─────────────────────────┴─────────────────┴─────────────────┤
+│ total run duration: 1151ms                                  │
+├─────────────────────────────────────────────────────────────┤
+│ total data received: 32.94kB (approx)                       │
+├─────────────────────────────────────────────────────────────┤
+│ average response time: 7ms [min: 3ms, max: 27ms, s.d.: 4ms] │
+└─────────────────────────────────────────────────────────────┘

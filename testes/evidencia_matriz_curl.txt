@@ -1,0 +1,252 @@
+# ColheAi API - evidencia da matriz de testes com curl
+# Executado em 10/11/2026 contra a API local (Spring Boot 4.1.1 + Oracle XE 21c em Docker), banco recem-carregado com sql/colheai_ddd_tabelas.sql
+
+
+=== SAUDE
+001 | GET    /status                                | esperado 200 | obtido 200 | OK
+      {"status":"UP","api":"ColheAi"}
+
+=== ENTIDADE EXECUTORA (EEx)
+002 | GET    /entidades                             | esperado 200 | obtido 200 | OK
+      [{"id":1,"nome":"Prefeitura de São Paulo - SME/CODAE","municipio":"São Paulo","uf":"SP","codigoIbge":3550308,"repasseAnual":9.5E7,"anoRepasse":2026},{"id":2,"nome":"Prefeitura de Embu-Guaçu - Secretaria de Educação","municipio":"Embu-Guaçu","uf":"SP","codigoIbge":3515103,"repasseAnual":400000.0,"anoRepasse":2026},{"id":3,"nome":"Prefeitura de Itapecerica da Serra - Secretaria de Educação","municipio":"Itapece
+003 | GET    /entidades/1                           | esperado 200 | obtido 200 | OK
+      {"id":1,"nome":"Prefeitura de São Paulo - SME/CODAE","municipio":"São Paulo","uf":"SP","codigoIbge":3550308,"repasseAnual":9.5E7,"anoRepasse":2026}
+004 | GET    /entidades/999                         | esperado 404 | obtido 404 | OK
+      {"erro":"Não encontrado","detalhe":"Entidade executora não encontrada"}
+005 | GET    /entidades/abc                         | esperado 400 | obtido 400 | OK
+      {"erro":"Parâmetro inválido","detalhe":"O valor informado para 'id' não é válido"}
+006 | POST   /entidades                             | esperado 201 | obtido 201 | OK
+      Location: http://localhost:8080/entidades/100
+      {"id":100,"nome":"Prefeitura de Juquitiba - Secretaria de Educação","municipio":"Juquitiba","uf":"SP","codigoIbge":3526209,"repasseAnual":180000.0,"anoRepasse":2026}
+007 | POST   /entidades                             | esperado 400 | obtido 400 | OK
+      {"erro":"Dados inválidos","detalhe":"Corrija os campos indicados e envie de novo","campos":{"codigoIbge":"Código IBGE deve ter 7 dígitos","nome":"Nome é obrigatório","uf":"UF deve ter 2 letras maiúsculas (ex.: SP)","anoRepasse":"A meta de 45% vale a partir de 2026","repasseAnual":"Repasse anual deve ser maior que zero"}}
+008 | POST   /entidades                             | esperado 409 | obtido 409 | OK
+      {"erro":"Registro duplicado","detalhe":"Já existe um cadastro com esses dados (um campo que não pode se repetir foi repetido)"}
+009 | PUT    /entidades/100                         | esperado 200 | obtido 200 | OK
+      {"id":100,"nome":"Prefeitura de Juquitiba - SME","municipio":"Juquitiba","uf":"SP","codigoIbge":3526209,"repasseAnual":185000.0,"anoRepasse":2026}
+010 | PUT    /entidades/999                         | esperado 404 | obtido 404 | OK
+      {"erro":"Não encontrado","detalhe":"Entidade executora não encontrada"}
+011 | PUT    /entidades/100                         | esperado 400 | obtido 400 | OK
+      {"erro":"Dados inválidos","detalhe":"Corrija os campos indicados e envie de novo","campos":{"repasseAnual":"Repasse anual deve ser maior que zero"}}
+012 | PUT    /entidades/100                         | esperado 409 | obtido 409 | OK
+      {"erro":"Registro duplicado","detalhe":"Já existe um cadastro com esses dados (um campo que não pode se repetir foi repetido)"}
+013 | GET    /entidades/1/chamadas                  | esperado 200 | obtido 200 | OK
+      [{"id":1,"numeroEdital":"001/2026","objeto":"Hortaliças e frutas da agricultura familiar - 1º semestre","dataAbertura":"2026-02-02","dataEncerramento":"2026-03-06","status":"HOMOLOGADA","entidade":{"id":1,"nome":"Prefeitura de São Paulo - SME/CODAE","municipio":"São Paulo","uf":"SP","codigoIbge":3550308,"repasseAnual":9.5E7,"anoRepasse":2026}},{"id":2,"numeroEdital":"002/2026","objeto":"Grãos e raízes da agricu
+014 | GET    /entidades/999/chamadas                | esperado 404 | obtido 404 | OK
+      {"erro":"Não encontrado","detalhe":"Entidade executora não encontrada"}
+015 | POST   /entidades/100/chamadas                | esperado 201 | obtido 201 | OK
+      Location: http://localhost:8080/chamadas/100
+      {"id":100,"numeroEdital":"001/2026","objeto":"Hortaliças para as escolas de Juquitiba","dataAbertura":"2026-11-10","dataEncerramento":"2026-12-10","status":"ABERTA","entidade":{"id":100,"nome":"Prefeitura de Juquitiba - SME","municipio":"Juquitiba","uf":"SP","codigoIbge":3526209,"repasseAnual":185000.0,"anoRepasse":2026}}
+016 | POST   /entidades/100/chamadas                | esperado 400 | obtido 400 | OK
+      {"erro":"Dados inválidos","detalhe":"Corrija os campos indicados e envie de novo","campos":{"periodoValido":"A data de encerramento deve ser depois da data de abertura"}}
+017 | POST   /entidades/999/chamadas                | esperado 404 | obtido 404 | OK
+      {"erro":"Não encontrado","detalhe":"Entidade executora não encontrada"}
+018 | POST   /entidades/100/chamadas                | esperado 409 | obtido 409 | OK
+      {"erro":"Registro duplicado","detalhe":"Já existe um cadastro com esses dados (um campo que não pode se repetir foi repetido)"}
+019 | GET    /entidades/1/meta                      | esperado 200 | obtido 200 | OK
+      {"entidade":{"id":1,"nome":"Prefeitura de São Paulo - SME/CODAE","municipio":"São Paulo","uf":"SP","codigoIbge":3550308,"repasseAnual":9.5E7,"anoRepasse":2026},"ano":2026,"repasse":9.5E7,"meta":4.275E7,"contratado":122800.0,"percentualContratado":0.13,"falta":4.26272E7,"metaAtingida":false}
+020 | GET    /entidades/3/meta                      | esperado 200 | obtido 200 | OK
+      {"entidade":{"id":3,"nome":"Prefeitura de Itapecerica da Serra - Secretaria de Educação","municipio":"Itapecerica da Serra","uf":"SP","codigoIbge":3522208,"repasseAnual":220000.0,"anoRepasse":2026},"ano":2026,"repasse":220000.0,"meta":99000.0,"contratado":101350.0,"percentualContratado":46.07,"falta":0.0,"metaAtingida":true}
+021 | GET    /entidades/999/meta                    | esperado 404 | obtido 404 | OK
+      {"erro":"Não encontrado","detalhe":"Entidade executora não encontrada"}
+
+=== CHAMADA PUBLICA
+022 | GET    /chamadas                              | esperado 200 | obtido 200 | OK
+      [{"id":1,"numeroEdital":"001/2026","objeto":"Hortaliças e frutas da agricultura familiar - 1º semestre","dataAbertura":"2026-02-02","dataEncerramento":"2026-03-06","status":"HOMOLOGADA","entidade":{"id":1,"nome":"Prefeitura de São Paulo - SME/CODAE","municipio":"São Paulo","uf":"SP","codigoIbge":3550308,"repasseAnual":9.5E7,"anoRepasse":2026}},{"id":4,"numeroEdital":"001/2026","objeto":"Gêneros alimentícios da 
+023 | GET    /chamadas?status=ABERTA                | esperado 200 | obtido 200 | OK
+      [{"id":3,"numeroEdital":"003/2026","objeto":"Hortifrúti e ovos para entregas de dezembro a março","dataAbertura":"2026-10-26","dataEncerramento":"2026-11-27","status":"ABERTA","entidade":{"id":1,"nome":"Prefeitura de São Paulo - SME/CODAE","municipio":"São Paulo","uf":"SP","codigoIbge":3550308,"repasseAnual":9.5E7,"anoRepasse":2026}},{"id":100,"numeroEdital":"001/2026","objeto":"Hortaliças para as escolas de Juq
+024 | GET    /chamadas/100                          | esperado 200 | obtido 200 | OK
+      {"id":100,"numeroEdital":"001/2026","objeto":"Hortaliças para as escolas de Juquitiba","dataAbertura":"2026-11-10","dataEncerramento":"2026-12-10","status":"ABERTA","entidade":{"id":100,"nome":"Prefeitura de Juquitiba - SME","municipio":"Juquitiba","uf":"SP","codigoIbge":3526209,"repasseAnual":185000.0,"anoRepasse":2026}}
+025 | GET    /chamadas/999                          | esperado 404 | obtido 404 | OK
+      {"erro":"Não encontrado","detalhe":"Chamada pública não encontrada"}
+026 | PUT    /chamadas/100                          | esperado 200 | obtido 200 | OK
+      {"id":100,"numeroEdital":"001/2026","objeto":"Hortaliças e frutas para as escolas de Juquitiba","dataAbertura":"2026-11-10","dataEncerramento":"2026-12-15","status":"ABERTA","entidade":{"id":100,"nome":"Prefeitura de Juquitiba - SME","municipio":"Juquitiba","uf":"SP","codigoIbge":3526209,"repasseAnual":185000.0,"anoRepasse":2026}}
+027 | PUT    /chamadas/999                          | esperado 404 | obtido 404 | OK
+      {"erro":"Não encontrado","detalhe":"Chamada pública não encontrada"}
+028 | PUT    /chamadas/100                          | esperado 400 | obtido 400 | OK
+      {"erro":"Dados inválidos","detalhe":"Corrija os campos indicados e envie de novo","campos":{"status":"Status deve ser ABERTA, EM_ANALISE, HOMOLOGADA ou FRACASSADA"}}
+029 | PATCH  /chamadas/1                            | esperado 405 | obtido 405 | OK
+      {"erro":"Método não permitido","detalhe":"O método PATCH não é aceito nesta rota"}
+030 | GET    /chamadas/3/itens                      | esperado 200 | obtido 200 | OK
+      [{"id":7,"quantidadeDemandada":25000.0,"precoUnitario":2.6,"chamada":{"id":3},"produto":{"id":1,"nome":"Alface crespa","categoria":"HORTALICA","unidadeMedida":"UNIDADE"}},{"id":9,"quantidadeDemandada":8000.0,"precoUnitario":4.8,"chamada":{"id":3},"produto":{"id":7,"nome":"Batata-doce","categoria":"RAIZ_TUBERCULO","unidadeMedida":"KG"}},{"id":10,"quantidadeDemandada":3000.0,"precoUnitario":14.0,"chamada":{"id":3},"pro
+031 | GET    /chamadas/999/itens                    | esperado 404 | obtido 404 | OK
+      {"erro":"Não encontrado","detalhe":"Chamada pública não encontrada"}
+032 | POST   /chamadas/100/itens                    | esperado 201 | obtido 201 | OK
+      Location: http://localhost:8080/itens/100
+      {"id":100,"quantidadeDemandada":3000.0,"precoUnitario":3.4,"chamada":{"id":100},"produto":{"id":2,"nome":"Couve-manteiga","categoria":"HORTALICA","unidadeMedida":"MACO"}}
+033 | POST   /chamadas/100/itens                    | esperado 400 | obtido 400 | OK
+      {"erro":"Dados inválidos","detalhe":"Corrija os campos indicados e envie de novo","campos":{"produto":"Produto é obrigatório","precoUnitario":"Preço unitário deve ser maior que zero"}}
+034 | POST   /chamadas/1/itens                      | esperado 409 | obtido 409 | OK
+      {"erro":"Regra de negócio violada","detalhe":"A chamada 001/2026 não está aberta (status: HOMOLOGADA)"}
+035 | POST   /chamadas/100/itens                    | esperado 404 | obtido 404 | OK
+      {"erro":"Não encontrado","detalhe":"Produto não encontrado"}
+036 | POST   /chamadas/100/itens                    | esperado 409 | obtido 409 | OK
+      {"erro":"Registro duplicado","detalhe":"Já existe um cadastro com esses dados (um campo que não pode se repetir foi repetido)"}
+037 | POST   /chamadas/999/itens                    | esperado 404 | obtido 404 | OK
+      {"erro":"Não encontrado","detalhe":"Chamada pública não encontrada"}
+038 | POST   /chamadas/3/itens                      | esperado 201 | obtido 201 | OK
+      Location: http://localhost:8080/itens/102
+      {"id":102,"quantidadeDemandada":5000.0,"precoUnitario":4.0,"chamada":{"id":3},"produto":{"id":6,"nome":"Mandioca","categoria":"RAIZ_TUBERCULO","unidadeMedida":"KG"}}
+
+=== ITEM DA CHAMADA
+039 | GET    /itens                                 | esperado 200 | obtido 200 | OK
+      [{"id":1,"quantidadeDemandada":20000.0,"precoUnitario":2.5,"chamada":{"id":1},"produto":{"id":1,"nome":"Alface crespa","categoria":"HORTALICA","unidadeMedida":"UNIDADE"}},{"id":2,"quantidadeDemandada":12000.0,"precoUnitario":3.2,"chamada":{"id":1},"produto":{"id":2,"nome":"Couve-manteiga","categoria":"HORTALICA","unidadeMedida":"MACO"}},{"id":3,"quantidadeDemandada":30000.0,"precoUnitario":5.2,"chamada":{"id":1},"pro
+040 | GET    /itens/100                             | esperado 200 | obtido 200 | OK
+      {"id":100,"quantidadeDemandada":3000.0,"precoUnitario":3.4,"chamada":{"id":100},"produto":{"id":2,"nome":"Couve-manteiga","categoria":"HORTALICA","unidadeMedida":"MACO"}}
+041 | GET    /itens/999                             | esperado 404 | obtido 404 | OK
+      {"erro":"Não encontrado","detalhe":"Item da chamada não encontrado"}
+042 | PUT    /itens/100                             | esperado 200 | obtido 200 | OK
+      {"id":100,"quantidadeDemandada":3500.0,"precoUnitario":3.4,"chamada":{"id":100},"produto":{"id":2,"nome":"Couve-manteiga","categoria":"HORTALICA","unidadeMedida":"MACO"}}
+043 | PUT    /itens/999                             | esperado 404 | obtido 404 | OK
+      {"erro":"Não encontrado","detalhe":"Item da chamada não encontrado"}
+044 | PUT    /itens/100                             | esperado 400 | obtido 400 | OK
+      {"erro":"Dados inválidos","detalhe":"Corrija os campos indicados e envie de novo","campos":{"quantidadeDemandada":"Quantidade demandada deve ser maior que zero"}}
+045 | GET    /itens/7/propostas                     | esperado 200 | obtido 200 | OK
+      [{"id":9,"quantidade":15000.0,"valor":39000.0,"dataEnvio":"2026-11-04","status":"ENVIADA","item":{"id":7,"quantidadeDemandada":25000.0,"precoUnitario":2.6,"chamada":{"id":3},"produto":{"id":1,"nome":"Alface crespa","categoria":"HORTALICA","unidadeMedida":"UNIDADE"}},"agricultor":{"id":3,"nome":"Cooperativa Agroecológica Sul Paulistana","caf":"SIM-CAF-PJ-0003","tipoFornecedor":"GRUPO_FORMAL","quantidadeFamilias":25,"
+046 | GET    /itens/999/propostas                   | esperado 404 | obtido 404 | OK
+      {"erro":"Não encontrado","detalhe":"Item da chamada não encontrado"}
+
+=== PROPOSTA E A REGRA DOS R$ 40 MIL (Maria, CAF SIM-CAF-PF-0001: R$ 27.800,00 comprometidos em SP em 2026, restam R$ 12.200,00)
+047 | GET    /entidades/1/meta                      | esperado 200 | obtido 200 | OK
+      {"entidade":{"id":1,"nome":"Prefeitura de São Paulo - SME/CODAE","municipio":"São Paulo","uf":"SP","codigoIbge":3550308,"repasseAnual":9.5E7,"anoRepasse":2026},"ano":2026,"repasse":9.5E7,"meta":4.275E7,"contratado":122800.0,"percentualContratado":0.13,"falta":4.26272E7,"metaAtingida":false}
+048 | POST   /itens/102/propostas                   | esperado 409 | obtido 409 | OK
+      {"erro":"Regra de negócio violada","detalhe":"Limite do PNAE excedido para o CAF SIM-CAF-PF-0001: o teto é R$ 40.000,00 por ano nesta EEx, já estão comprometidos R$ 27.800,00 e restam R$ 12.200,00. Esta proposta vale R$ 12.200,04."}
+      ^ 3.050,01 x R$ 4,00 = R$ 12.200,04: passa R$ 0,04 do teto -> 409
+049 | POST   /itens/102/propostas                   | esperado 201 | obtido 201 | OK
+      Location: http://localhost:8080/propostas/100
+      {"id":100,"quantidade":3050.0,"valor":12200.0,"dataEnvio":"2026-11-10","status":"ENVIADA","item":{"id":102,"quantidadeDemandada":5000.0,"precoUnitario":4.0,"chamada":{"id":3},"produto":{"id":6,"nome":"Mandioca","categoria":"RAIZ_TUBERCULO","unidadeMedida":"KG"}},"agricultor":{"id":1,"nome":"Maria Aparecida dos Santos","caf":"SIM-CAF-PF-0001","tipoFornecedor":"INDIVIDUAL","quantidadeFamilias":1,"municipio":"São Paulo
+      ^ 3.050 x R$ 4,00 = R$ 12.200,00: chega exatamente no teto de R$ 40.000,00 -> 201
+050 | POST   /itens/9/propostas                     | esperado 409 | obtido 409 | OK
+      {"erro":"Regra de negócio violada","detalhe":"Limite do PNAE excedido para o CAF SIM-CAF-PF-0001: o teto é R$ 40.000,00 por ano nesta EEx, já estão comprometidos R$ 40.000,00 e restam R$ 0,00. Esta proposta vale R$ 4,80."}
+      ^ teto atingido: qualquer valor a mais nesta EEx em 2026 e recusado
+051 | POST   /itens/7/propostas                     | esperado 409 | obtido 409 | OK
+      {"erro":"Registro duplicado","detalhe":"Já existe um cadastro com esses dados (um campo que não pode se repetir foi repetido)"}
+      ^ a cooperativa (25 familias, teto R$ 1 milhao) ja ofertou o item 7: oferta repetida
+052 | POST   /itens/5/propostas                     | esperado 409 | obtido 409 | OK
+      {"erro":"Regra de negócio violada","detalhe":"A chamada 002/2026 não está aberta (status: FRACASSADA)"}
+      ^ item 5 e da chamada 2, FRACASSADA
+053 | POST   /itens/102/propostas                   | esperado 400 | obtido 400 | OK
+      {"erro":"Dados inválidos","detalhe":"Corrija os campos indicados e envie de novo","campos":{"quantidade":"Quantidade deve ser maior que zero","agricultor":"Agricultor é obrigatório"}}
+054 | POST   /itens/999/propostas                   | esperado 404 | obtido 404 | OK
+      {"erro":"Não encontrado","detalhe":"Item da chamada não encontrado"}
+055 | POST   /itens/102/propostas                   | esperado 404 | obtido 404 | OK
+      {"erro":"Não encontrado","detalhe":"Agricultor não encontrado"}
+056 | POST   /itens/102/propostas                   | esperado 400 | obtido 400 | OK
+      {"erro":"JSON inválido","detalhe":"O corpo da requisição não pôde ser lido. Confira o formato do JSON, os tipos dos campos e as datas (AAAA-MM-DD)"}
+057 | GET    /propostas                             | esperado 200 | obtido 200 | OK
+      [{"id":1,"quantidade":6000.0,"valor":15000.0,"dataEnvio":"2026-02-20","status":"CONTRATADA","dataContrato":"2026-03-16","item":{"id":1,"quantidadeDemandada":20000.0,"precoUnitario":2.5,"chamada":{"id":1},"produto":{"id":1,"nome":"Alface crespa","categoria":"HORTALICA","unidadeMedida":"UNIDADE"}},"agricultor":{"id":1,"nome":"Maria Aparecida dos Santos","caf":"SIM-CAF-PF-0001","tipoFornecedor":"INDIVIDUAL","quantidadeF
+058 | GET    /propostas/100                         | esperado 200 | obtido 200 | OK
+      {"id":100,"quantidade":3050.0,"valor":12200.0,"dataEnvio":"2026-11-10","status":"ENVIADA","item":{"id":102,"quantidadeDemandada":5000.0,"precoUnitario":4.0,"chamada":{"id":3},"produto":{"id":6,"nome":"Mandioca","categoria":"RAIZ_TUBERCULO","unidadeMedida":"KG"}},"agricultor":{"id":1,"nome":"Maria Aparecida dos Santos","caf":"SIM-CAF-PF-0001","tipoFornecedor":"INDIVIDUAL","quantidadeFamilias":1,"municipio":"São Paulo
+059 | GET    /propostas/999                         | esperado 404 | obtido 404 | OK
+      {"erro":"Não encontrado","detalhe":"Proposta não encontrada"}
+060 | PUT    /propostas/100                         | esperado 200 | obtido 200 | OK
+      {"id":100,"quantidade":3050.0,"valor":12200.0,"dataEnvio":"2026-11-10","status":"CONTRATADA","dataContrato":"2026-11-10","item":{"id":102,"quantidadeDemandada":5000.0,"precoUnitario":4.0,"chamada":{"id":3},"produto":{"id":6,"nome":"Mandioca","categoria":"RAIZ_TUBERCULO","unidadeMedida":"KG"}},"agricultor":{"id":1,"nome":"Maria Aparecida dos Santos","caf":"SIM-CAF-PF-0001","tipoFornecedor":"INDIVIDUAL","quantidadeFami
+      ^ a propria proposta fica fora da soma: continua no teto e e contratada (dataContrato = hoje)
+061 | PUT    /propostas/100                         | esperado 409 | obtido 409 | OK
+      {"erro":"Regra de negócio violada","detalhe":"Limite do PNAE excedido para o CAF SIM-CAF-PF-0001: o teto é R$ 40.000,00 por ano nesta EEx, já estão comprometidos R$ 27.800,00 e restam R$ 12.200,00. Esta proposta vale R$ 12.400,00."}
+062 | PUT    /propostas/100                         | esperado 400 | obtido 400 | OK
+      {"erro":"Dados inválidos","detalhe":"Corrija os campos indicados e envie de novo","campos":{"status":"Status deve ser ENVIADA, CONTRATADA ou RECUSADA"}}
+063 | PUT    /propostas/999                         | esperado 404 | obtido 404 | OK
+      {"erro":"Não encontrado","detalhe":"Proposta não encontrada"}
+064 | GET    /agricultores/1/propostas              | esperado 200 | obtido 200 | OK
+      [{"id":1,"quantidade":6000.0,"valor":15000.0,"dataEnvio":"2026-02-20","status":"CONTRATADA","dataContrato":"2026-03-16","item":{"id":1,"quantidadeDemandada":20000.0,"precoUnitario":2.5,"chamada":{"id":1},"produto":{"id":1,"nome":"Alface crespa","categoria":"HORTALICA","unidadeMedida":"UNIDADE"}},"agricultor":{"id":1,"nome":"Maria Aparecida dos Santos","caf":"SIM-CAF-PF-0001","tipoFornecedor":"INDIVIDUAL","quantidadeF
+065 | GET    /entidades/1/meta                      | esperado 200 | obtido 200 | OK
+      {"entidade":{"id":1,"nome":"Prefeitura de São Paulo - SME/CODAE","municipio":"São Paulo","uf":"SP","codigoIbge":3550308,"repasseAnual":9.5E7,"anoRepasse":2026},"ano":2026,"repasse":9.5E7,"meta":4.275E7,"contratado":135000.0,"percentualContratado":0.14,"falta":4.2615E7,"metaAtingida":false}
+      ^ contratado de SP subiu de R$ 122.800,00 para R$ 135.000,00
+066 | DELETE /propostas/100                         | esperado 204 | obtido 204 | OK
+067 | DELETE /propostas/100                         | esperado 404 | obtido 404 | OK
+      {"erro":"Não encontrado","detalhe":"Proposta não encontrada"}
+
+=== AGRICULTOR
+068 | GET    /agricultores                          | esperado 200 | obtido 200 | OK
+      [{"id":4,"nome":"Ana Lúcia Nascimento","caf":"SIM-CAF-PF-0004","tipoFornecedor":"INDIVIDUAL","quantidadeFamilias":1,"municipio":"São Paulo","uf":"SP","distrito":"Grajaú","organico":true,"dataCadastro":"2026-02-02"},{"id":5,"nome":"Associação dos Produtores Rurais de Embu-Guaçu","caf":"SIM-CAF-PJ-0005","tipoFornecedor":"GRUPO_FORMAL","quantidadeFamilias":12,"municipio":"Embu-Guaçu","uf":"SP","organico":false,"t
+069 | GET    /agricultores/1                        | esperado 200 | obtido 200 | OK
+      {"id":1,"nome":"Maria Aparecida dos Santos","caf":"SIM-CAF-PF-0001","tipoFornecedor":"INDIVIDUAL","quantidadeFamilias":1,"municipio":"São Paulo","uf":"SP","distrito":"Parelheiros","organico":true,"telefone":"11999990001","dataCadastro":"2026-01-12"}
+070 | GET    /agricultores/999                      | esperado 404 | obtido 404 | OK
+      {"erro":"Não encontrado","detalhe":"Agricultor não encontrado"}
+071 | POST   /agricultores                          | esperado 201 | obtido 201 | OK
+      Location: http://localhost:8080/agricultores/100
+      {"id":100,"nome":"Cooperativa Verde Juquitiba","caf":"SIM-CAF-PJ-0200","tipoFornecedor":"GRUPO_FORMAL","quantidadeFamilias":8,"municipio":"Juquitiba","uf":"SP","organico":true,"telefone":"1140001234","dataCadastro":"2026-11-10"}
+072 | POST   /agricultores                          | esperado 409 | obtido 409 | OK
+      {"erro":"Regra de negócio violada","detalhe":"Já existe um agricultor cadastrado com o CAF SIM-CAF-PF-0001"}
+073 | POST   /agricultores                          | esperado 400 | obtido 400 | OK
+      {"erro":"Dados inválidos","detalhe":"Corrija os campos indicados e envie de novo","campos":{"familiasCoerentes":"INDIVIDUAL tem 1 família; grupo formal ou informal tem 2 ou mais","telefone":"Telefone deve ter 10 ou 11 dígitos, só números, com DDD"}}
+074 | PUT    /agricultores/100                      | esperado 200 | obtido 200 | OK
+      {"id":100,"nome":"Cooperativa Verde de Juquitiba","caf":"SIM-CAF-PJ-0200","tipoFornecedor":"GRUPO_FORMAL","quantidadeFamilias":9,"municipio":"Juquitiba","uf":"SP","organico":true,"telefone":"1140001234","dataCadastro":"2026-11-10"}
+075 | PUT    /agricultores/100                      | esperado 409 | obtido 409 | OK
+      {"erro":"Regra de negócio violada","detalhe":"Já existe outro agricultor cadastrado com o CAF SIM-CAF-PF-0001"}
+076 | PUT    /agricultores/999                      | esperado 404 | obtido 404 | OK
+      {"erro":"Não encontrado","detalhe":"Agricultor não encontrado"}
+077 | GET    /agricultores/999/propostas            | esperado 404 | obtido 404 | OK
+      {"erro":"Não encontrado","detalhe":"Agricultor não encontrado"}
+078 | DELETE /agricultores/1                        | esperado 409 | obtido 409 | OK
+      {"erro":"Registro em uso","detalhe":"Não é possível remover: existem outros registros ligados a este"}
+079 | DELETE /agricultores/100                      | esperado 204 | obtido 204 | OK
+
+=== PRODUTO
+080 | GET    /produtos                              | esperado 200 | obtido 200 | OK
+      [{"id":1,"nome":"Alface crespa","categoria":"HORTALICA","unidadeMedida":"UNIDADE"},{"id":5,"nome":"Banana nanica","categoria":"FRUTA","unidadeMedida":"KG"},{"id":7,"nome":"Batata-doce","categoria":"RAIZ_TUBERCULO","unidadeMedida":"KG"},{"id":8,"nome":"Caqui","categoria":"FRUTA","unidadeMedida":"KG"},{"id":3,"nome":"Cheiro-verde","categoria":"HORTALICA","unidadeMedida":"MACO"},{"id":2,"nome":"Couve-manteiga","categori
+081 | GET    /produtos/1                            | esperado 200 | obtido 200 | OK
+      {"id":1,"nome":"Alface crespa","categoria":"HORTALICA","unidadeMedida":"UNIDADE"}
+082 | GET    /produtos/999                          | esperado 404 | obtido 404 | OK
+      {"erro":"Não encontrado","detalhe":"Produto não encontrado"}
+083 | POST   /produtos                              | esperado 201 | obtido 201 | OK
+      Location: http://localhost:8080/produtos/100
+      {"id":100,"nome":"Abobrinha","categoria":"HORTALICA","unidadeMedida":"KG"}
+084 | POST   /produtos                              | esperado 409 | obtido 409 | OK
+      {"erro":"Registro duplicado","detalhe":"Já existe um cadastro com esses dados (um campo que não pode se repetir foi repetido)"}
+085 | POST   /produtos                              | esperado 400 | obtido 400 | OK
+      {"erro":"Dados inválidos","detalhe":"Corrija os campos indicados e envie de novo","campos":{"categoria":"Categoria deve ser HORTALICA, FRUTA, RAIZ_TUBERCULO, GRAO, ORIGEM_ANIMAL ou PROCESSADO"}}
+086 | PUT    /produtos/100                          | esperado 200 | obtido 200 | OK
+      {"id":100,"nome":"Abobrinha italiana","categoria":"HORTALICA","unidadeMedida":"KG"}
+087 | PUT    /produtos/999                          | esperado 404 | obtido 404 | OK
+      {"erro":"Não encontrado","detalhe":"Produto não encontrado"}
+088 | DELETE /produtos/4                            | esperado 409 | obtido 409 | OK
+      {"erro":"Registro em uso","detalhe":"Não é possível remover: existem outros registros ligados a este"}
+089 | DELETE /produtos/100                          | esperado 204 | obtido 204 | OK
+
+=== REMOCOES (204 e 409 de registro com filhos) - devolve o banco ao estado da carga
+090 | DELETE /itens/7                               | esperado 409 | obtido 409 | OK
+      {"erro":"Registro em uso","detalhe":"Não é possível remover: existem outros registros ligados a este"}
+091 | DELETE /itens/102                             | esperado 204 | obtido 204 | OK
+092 | DELETE /chamadas/3                            | esperado 409 | obtido 409 | OK
+      {"erro":"Registro em uso","detalhe":"Não é possível remover: existem outros registros ligados a este"}
+093 | DELETE /itens/100                             | esperado 204 | obtido 204 | OK
+094 | DELETE /chamadas/100                          | esperado 204 | obtido 204 | OK
+095 | DELETE /entidades/1                           | esperado 409 | obtido 409 | OK
+      {"erro":"Registro em uso","detalhe":"Não é possível remover: existem outros registros ligados a este"}
+096 | DELETE /entidades/100                         | esperado 204 | obtido 204 | OK
+097 | DELETE /entidades/100                         | esperado 404 | obtido 404 | OK
+      {"erro":"Não encontrado","detalhe":"Entidade executora não encontrada"}
+
+=== CASOS TRANSVERSAIS
+098 | GET    /rota-que-nao-existe                   | esperado 404 | obtido 404 | OK
+      {"erro":"Rota não encontrada","detalhe":"A rota /rota-que-nao-existe não existe nesta API"}
+099 | GET    /rota-que-nao-existe                   | esperado 404 | obtido 404 | OK
+      {"erro":"Rota não encontrada","detalhe":"A rota /rota-que-nao-existe não existe nesta API"}
+      ^ cliente que aceita SO HTML: o erro continua vindo em JSON
+100 | GET    /chamadas/999                          | esperado 404 | obtido 404 | OK
+      {"erro":"Não encontrado","detalhe":"Chamada pública não encontrada"}
+      ^ cabecalho Accept de um navegador de verdade: erro em JSON
+101 | GET    /chamadas                              | esperado 406 | obtido 406 | OK
+      {"erro":"Formato não aceito","detalhe":"Esta API responde somente em JSON (application/json)"}
+      ^ pedir a lista SO em HTML: 406, tambem em JSON (a API so fala JSON)
+102 | POST   /entidades                             | esperado 400 | obtido 400 | OK
+      {"erro":"JSON inválido","detalhe":"O corpo da requisição não pôde ser lido. Confira o formato do JSON, os tipos dos campos e as datas (AAAA-MM-DD)"}
+103 | POST   /entidades                             | esperado 415 | obtido 415 | OK
+      {"erro":"Formato não suportado","detalhe":"Envie o corpo como JSON, com o cabeçalho Content-Type: application/json"}
+104 | DELETE /entidades                             | esperado 405 | obtido 405 | OK
+      {"erro":"Método não permitido","detalhe":"O método DELETE não é aceito nesta rota"}
+105 | OPTIONS /chamadas                              | esperado 200 | obtido 200 | OK
+      CORS: Access-Control-Allow-Origin: *
+
+RESULTADO: 105 de 105 com o status esperado, 0 falha(s).
+
+=== TESTE DO 500 GENERICO (testes/teste_500.sh)
+Oracle desligado.
+GET /status (nao usa o banco):
+{"status":"UP","api":"ColheAi"}  -> HTTP 200
+GET /chamadas (precisa do banco; aguarda o tempo limite do pool):
+{"erro":"Erro interno","detalhe":"Ocorreu um erro inesperado. Tente novamente em instantes ou procure o administrador"}  -> HTTP 500
+Oracle ligado de novo.
+GET /chamadas depois de religar o banco -> HTTP 200 (a API se recupera sozinha, sem reiniciar)
